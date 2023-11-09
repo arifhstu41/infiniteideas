@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\InstallController;
 use App\Http\Controllers\Admin\UpdateController;
 use App\Http\Controllers\Admin\Frontend\AppearanceController;
 use App\Http\Controllers\Admin\Frontend\FrontendController;
+use App\Http\Controllers\Admin\Frontend\FrontendSectionController;
 use App\Http\Controllers\Admin\Frontend\BlogController;
 use App\Http\Controllers\Admin\Frontend\PageController;
 use App\Http\Controllers\Admin\Frontend\FAQController;
@@ -45,6 +46,7 @@ use App\Http\Controllers\Admin\Webhooks\CoinbaseWebhookController;
 use App\Http\Controllers\Admin\Webhooks\FlutterwaveWebhookController;
 use App\Http\Controllers\Admin\Webhooks\YookassaWebhookController;
 use App\Http\Controllers\Admin\Webhooks\PaddleWebhookController;
+use App\Http\Controllers\Admin\Webhooks\MidtransWebhookController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\TeamController;
@@ -66,6 +68,7 @@ use App\Http\Controllers\User\PromocodeController;
 use App\Http\Controllers\User\UserSupportController;
 use App\Http\Controllers\User\UserNotificationController;
 use App\Http\Controllers\User\SearchController;
+use App\Services\StripeService;
 use Illuminate\Support\Facades\Artisan;
 
 /*
@@ -88,13 +91,15 @@ Route::middleware(['middleware' => 'PreventBackHistory'])->group(function () {
 Route::controller(HomeController::class)->group(function () {
     Route::get('/', 'index');
     Route::get('/blog/{slug}', 'blogShow')->name('blogs.show');
-    Route::post('/contact', 'contact')->name('contact');
+    Route::get('/contact', 'contactShow')->name('contact');
+    Route::post('/contact', 'contactSend')->name('contact.send');
+    Route::get('/about', 'aboutUs')->name('about');
     Route::get('/terms-and-conditions', 'termsAndConditions')->name('terms');
     Route::get('/privacy-policy', 'privacyPolicy')->name('privacy');
 });
 
 // PAYMENT GATEWAY WEBHOOKS ROUTES
-Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handleStripe'])->name('stripe.webhook');
+Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handleStripe']);
 Route::post('/webhooks/paypal', [PaypalWebhookController::class, 'handlePaypal']);
 Route::post('/webhooks/paystack', [PaystackWebhookController::class, 'handlePaystack']);
 Route::post('/webhooks/razorpay', [RazorpayWebhookController::class, 'handleRazorpay']);
@@ -103,6 +108,7 @@ Route::post('/webhooks/coinbase', [CoinbaseWebhookController::class, 'handleCoin
 Route::post('/webhooks/flutterwave', [FlutterwaveWebhookController::class, 'handleFlutterwave']);
 Route::post('/webhooks/yookassa', [YookassaWebhookController::class, 'handleYookassa']);
 Route::post('/webhooks/paddle', [PaddleWebhookController::class, 'handlePaddle']);
+Route::post('/webhooks/midtrans', [MidtransWebhookController::class, 'midtransPaddle']);
 
 // INSTALL ROUTES
 Route::group(['prefix' => 'install', 'middleware' => 'install'], function() {
@@ -190,6 +196,18 @@ Route::group(['prefix' => 'admin', 'middleware' => ['verified', '2fa.verify', 'r
         Route::post('/chats/chat/store', 'store')->name('admin.davinci.chat.store');  
         Route::get('/chats/chat/{id}/edit', 'edit')->name('admin.davinci.chat.edit');  
         Route::put('/chats/chat/{id}/update', 'update')->name('admin.davinci.chat.update');  
+        Route::get('/chats/chat/category', 'category')->name('admin.davinci.chat.category');  
+        Route::post('/chats/chat/category/change', 'change');
+        Route::post('/chats/chat/category/create', 'createCategory');
+        Route::post('/chats/chat/category/delete', 'delete');
+        Route::get('/chats/chat/prompt', 'prompt')->name('admin.davinci.chat.prompt'); 
+        Route::get('/chats/chat/prompt/create', 'promptCreate')->name('admin.davinci.chat.prompt.create');  
+        Route::post('/chats/chat/prompt/store', 'promptStore')->name('admin.davinci.chat.prompt.store'); 
+        Route::get('/chats/chat/prompt/{id}/edit', 'promptEdit')->name('admin.davinci.chat.prompt.edit');  
+        Route::put('/chats/chat/prompt/{id}/update', 'promptUpdate')->name('admin.davinci.chat.prompt.update'); 
+        Route::post('/chats/chat/prompt/activate', 'promptActivate');  
+        Route::post('/chats/chat/prompt/deactivate', 'promptDeactivate'); 
+        Route::post('/chats/chat/prompt/delete', 'promptDelete');
     });
 
     // ADMIN USER MANAGEMENT ROUTES
@@ -202,10 +220,13 @@ Route::group(['prefix' => 'admin', 'middleware' => ['verified', '2fa.verify', 'r
         Route::get('/users/{user}/show', 'show')->name('admin.user.show');
         Route::get('/users/{user}/edit', 'edit')->name('admin.user.edit');
         Route::get('/users/{user}/credit', 'credit')->name('admin.user.credit');
+        Route::get('/users/{user}/subscription', 'subscription')->name('admin.user.subscription');
+        Route::post('/users/{user}/assign', 'assignSubscription')->name('admin.user.assign');
         Route::post('/users/{user}/increase', 'increase')->name('admin.user.increase');
         Route::put('/users/{user}/update', 'update')->name('admin.user.update');
         Route::put('/users/{user}', 'change')->name('admin.user.change');       
         Route::post('/users/delete', 'delete');
+        Route::post('/users/plan', 'hiddenPlans');
     }); 
 
     // ADMIN FINANCE - DASHBOARD & TRANSACTIONS & SUBSCRIPTION LIST ROUTES
@@ -220,7 +241,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['verified', '2fa.verify', 'r
     });
 
     // ADMIN FINANCE - CANCEL USER SUBSCRIPTION
-    Route::post('/finance/subscriptions/cancel', [PaymentController::class, 'stopSubscription']);
+    Route::post('/finance/subscriptions/cancel', [PaymentController::class, 'stopSubscription'])->name('admin.stop.subscription');
 
     // ADMIN FINANCE - SUBSCRIPTION PLAN ROUTES
     Route::controller(FinanceSubscriptionPlanController::class)->group(function() {
@@ -357,6 +378,25 @@ Route::group(['prefix' => 'admin', 'middleware' => ['verified', '2fa.verify', 'r
         Route::post('/settings/frontend', 'store')->name('admin.settings.frontend.store');
     });
 
+    // ADMIN FRONTEND SETTINGS - FRONTEND SECTIONS
+    Route::controller(FrontendSectionController::class)->group(function() {
+        Route::get('/settings/steps', 'showSteps')->name('admin.settings.step');
+        Route::get('/settings/steps/create', 'createSteps')->name('admin.settings.step.create');
+        Route::post('/settings/steps/create', 'storeSteps')->name('admin.settings.step.store');
+        Route::get('/settings/steps/{id}/edit', 'editSteps')->name('admin.settings.step.edit');
+        Route::put('/settings/steps/{id}', 'updateSteps')->name('admin.settings.step.update');
+        Route::post('/settings/steps/delete', 'deleteSteps');
+        Route::get('/settings/tools', 'showTools')->name('admin.settings.tool');
+        Route::get('/settings/tools/{id}/edit', 'editTools')->name('admin.settings.tool.edit');
+        Route::put('/settings/tools/{id}', 'updateTools')->name('admin.settings.tool.update');
+        Route::get('/settings/features', 'showFeatures')->name('admin.settings.feature');
+        Route::get('/settings/features/create', 'createFeatures')->name('admin.settings.feature.create');
+        Route::post('/settings/features/create', 'storeFeatures')->name('admin.settings.feature.store');
+        Route::get('/settings/features/{id}/edit', 'editFeatures')->name('admin.settings.feature.edit');
+        Route::put('/settings/features/{id}', 'updateFeatures')->name('admin.settings.feature.update');
+        Route::post('/settings/features/delete', 'deleteFeatures');
+    });
+
     // ADMIN FRONTEND SETTINGS - BLOG MANAGER
     Route::controller(BlogController::class)->group(function() {
         Route::get('/settings/blog', 'index')->name('admin.settings.blog');
@@ -397,7 +437,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['verified', '2fa.verify', 'r
     // ADMIN FRONTEND SETTINGS - PAGE MANAGER (PRIVACY & TERMS) 
     Route::controller(PageController::class)->group(function() {
         Route::get('/settings/terms', 'index')->name('admin.settings.terms');
+        Route::get('/settings/about', 'indexAbout')->name('admin.settings.about');
         Route::post('/settings/terms', 'store')->name('admin.settings.terms.store');
+        Route::post('/settings/about', 'storeAbout')->name('admin.settings.about.store');
     });
 
     // ADMIN GENERAL SETTINGS - UPGRADE SOFTWARE
@@ -465,7 +507,8 @@ Route::group(['prefix' => 'user', 'middleware' => ['verified', '2fa.verify', 'ro
         Route::post('/chat/clear', 'clear');   
         Route::post('/chat/favorite', 'favorite');
         Route::get('/chat/generate', 'generateChat');   
-        Route::post('/chat/messages', 'messages');                
+        Route::post('/chat/conversation', 'conversation');                
+        Route::post('/chat/history', 'history');                
         Route::post('/chat/rename', 'rename');
         Route::post('/chat/delete', 'delete');
         Route::get('/chats/{code}', 'view');
@@ -539,6 +582,8 @@ Route::group(['prefix' => 'user', 'middleware' => ['verified', '2fa.verify', 'ro
         Route::get('/profile/edit', 'edit')->name('user.profile.edit');     
         Route::get('/profile/edit/defaults', 'editDefaults')->name('user.profile.defaults');     
         Route::get('/profile/edit/delete', 'showDelete')->name('user.profile.delete');     
+        Route::get('/profile/api/edit', 'showAPI')->name('user.profile.api');     
+        Route::put('/profile/api/store/{user}', 'storeAPI')->name('user.profile.api.store');     
         Route::post('/profile/edit/delete/{user}', 'accountDelete')->name('user.profile.delete.account');     
         Route::put('/profile/update/defaults/{user}', 'updateDefaults')->name('user.profile.update.defaults');     
     });      
@@ -576,17 +621,28 @@ Route::group(['prefix' => 'user', 'middleware' => ['verified', '2fa.verify', 'ro
 
     // USER PAYMENT ROUTES
     Route::controller(PaymentController::class)->group(function() {
+        Route::get('/payments/pay/{id}', 'pay');
         Route::post('/payments/pay/{id}', 'pay')->name('user.payments.pay')->middleware('unsubscribed');
+        Route::get('/payments/pay/one-time/{type}/{id}', 'payPrePaid');
         Route::post('/payments/pay/one-time/{type}/{id}', 'payPrePaid')->name('user.payments.pay.prepaid');
         Route::post('/payments/approved/razorpay', 'approvedRazorpayPrepaid')->name('user.payments.approved.razorpay');
-        Route::get('/payments/approved/braintree', 'braintreeSuccess')->name('user.payments.approved.braintree');
+        Route::post('/payments/approved/midtrans', 'midtransSuccess')->name('user.payments.approved.midtrans'); 
+        Route::post('/payments/approved/iyzico', 'iyzicoSuccess')->name('user.payments.approved.iyzico'); 
+        Route::get('/payments/approved/braintree', 'braintreeSuccess')->name('user.payments.approved.braintree'); 
         Route::get('/payments/approved/paddle', 'paddleSuccess'); 
         Route::get('/payments/approved', 'approved')->name('user.payments.approved');               
         Route::get('/payments/cancelled', 'cancelled')->name('user.payments.cancelled');
         Route::post('/payments/subscription/razorpay', 'approvedRazorpaySubscription')->name('user.payments.subscription.razorpay');
         Route::get('/payments/subscription/flutterwave', 'approvedFlutterwaveSubscription')->name('user.payments.subscription.flutterwave');
+        Route::get('/payments/subscription/stripe', 'approvedStripeSubscription')->name('user.payments.subscription.stripe');
         Route::get('/payments/subscription/approved', 'approvedSubscription')->name('user.payments.subscription.approved');        
         Route::get('/payments/subscription/cancelled', 'cancelledSubscription')->name('user.payments.subscription.cancelled')->middleware('unsubscribed');
+    });
+
+    // USER STRIPE ROUTES
+    Route::controller(StripeService::class)->group(function() {
+        Route::post('/payments/stripe/process', 'processStripe')->name('user.payments.stripe.process');
+        Route::get('/payments/stripe/cancel', 'processCancel')->name('user.payments.stripe.cancel');
     });
 
     // USER PAYMENT ROUTES

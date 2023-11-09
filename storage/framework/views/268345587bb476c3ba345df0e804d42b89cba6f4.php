@@ -2,7 +2,7 @@
 <div class="app-header header">
     <div class="container-fluid"> 
         <div class="d-flex">
-            <a class="header-brand" href="<?php echo e(url('/')); ?>">
+            <a class="header-brand" href="<?php echo e(url('/user/dashboard')); ?>">
                 <img src="<?php echo e(URL::asset('img/brand/logo.png')); ?>" class="header-brand-img desktop-lgo" alt="Polly logo">
                 <img src="<?php echo e(URL::asset('img/brand/favicon.png')); ?>" class="header-brand-img mobile-logo" alt="Polly logo">
             </a>
@@ -169,7 +169,7 @@
                 </div>
                 <div class="dropdown header-locale">
                     <a class="nav-link icon" data-bs-toggle="dropdown">
-                        <span class="header-icon flag flag-<?php echo e(Config::get('locale')[App::getLocale()]['flag']); ?> pr-1"></span><span class="header-text fs-13 pr-5"><?php echo e(Config::get('locale')[App::getLocale()]['code']); ?></span>
+                        <span class="header-icon flag flag-<?php echo e(Config::get('locale')[App::getLocale()]['flag']); ?> pr-1"></span><span class="header-text fs-13 pr-5"><?php echo e(ucfirst(Config::get('locale')[App::getLocale()]['code'])); ?></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow animated">
                         <div class="local-menu">
@@ -196,23 +196,7 @@
                         <div class="text-center pt-2">
                             <span class="text-center user fs-12 pb-0 font-weight-bold"><?php echo e(Auth::user()->name); ?></span><br>
                             <span class="text-center fs-12 text-muted"><?php echo e(Auth::user()->job_role); ?></span>
-                            <div class="dropdown-divider mt-3"></div>
-                            <li class="mt-3 mb-2 fs-12 font-weight-bold"><?php echo e(__('Plan')); ?>: <?php if(is_null(auth()->user()->plan_id)): ?><?php echo e(__('Free Trial')); ?> <?php else: ?> <?php echo e(__(App\Services\HelperService::getPlanName())); ?>  <?php endif; ?> <?php if(is_null(auth()->user()->plan_id)): ?> <br><a href="<?php echo e(route('user.plans')); ?>" class="text-yellow upgrade-action-button"><?php echo e(__('Upgrade Now')); ?></a> <?php endif; ?></li>
-                            <div class="inline-flex w-100 text-left pl-6">
-                                <div class="flex w-100">
-                                    <span class="fs-11 font-weight-600"><i class="fa-solid fa-message-lines text-primary mr-2"></i><span class="text-muted"><?php echo e(__('Words')); ?></span> <span class="text-primary ml-1" id="available-words"><?php echo e(App\Services\HelperService::userAvailableWords()); ?></span></span>
-                                </div> 
-                                <div class="flex w-100">
-                                    <span class="fs-11 font-weight-600"><i class="fa-sharp fa-solid fa-message-image text-primary mr-2"></i><span class="text-muted"><?php echo e(__('Images')); ?></span> <span class="text-primary ml-1" id="available-images"><?php echo e(App\Services\HelperService::userAvailableImages()); ?></span></span>
-                                </div> 
-                                <div class="flex w-100">
-                                    <span class="fs-11 font-weight-600"><i class="fa-sharp fa-solid fa-message-music text-primary mr-2"></i><span class="text-muted"><?php echo e(__('Minutes')); ?></span> <span class="text-primary ml-1" id="available-minutes"><?php echo e(App\Services\HelperService::userAvailableMinutes()); ?></span></span>
-                                </div> 
-                                <div class="flex w-100">
-                                    <span class="fs-11 font-weight-600"><i class="fa-solid fa-message-captions text-primary mr-2"></i><span class="text-muted"><?php echo e(__('Characters')); ?></span> <span class="text-primary ml-1" id="available-characters"><?php echo e(App\Services\HelperService::userAvailableChars()); ?></span></span>
-                                </div>                    
-                            </div>
-                            <div class="dropdown-divider mt-3"></div>     
+                            <div class="dropdown-divider mt-3"></div>    
                         </div>
                         <a class="dropdown-item d-flex" href="<?php echo e(route('user.plans')); ?>">
                             <span class="profile-icon fa-solid fa-box-circle-check"></span>

@@ -57,58 +57,70 @@
 										</div>
 									</div>
 								</div>
-								<div class="col-lg-4 col-md-6 col-sm-12">
-									<div class="card overflow-hidden user-dashboard-special-box">
-										<div class="card-body d-flex">
-											<div class="usage-info w-100">
-												<p class=" mb-3 fs-12 font-weight-bold"><?php echo e(__('Total Images Created')); ?></p>
-												<h2 class="mb-2 number-font fs-16"><?php echo e(number_format($data['images'])); ?> <span class="text-muted fs-16"><?php echo e(__('images')); ?></span></h2>
-											</div>
-											<div class="usage-icon text-right">
-												<i class="fa-solid fa-image-landscape"></i>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="col-lg-4 col-md-6 col-sm-12">
-									<div class="card overflow-hidden user-dashboard-special-box">
-										<div class="card-body d-flex">
-											<div class="usage-info w-100">
-												<p class=" mb-3 fs-12 font-weight-bold"><?php echo e(__('Total Transcribe Tasks')); ?></p>
-												<h2 class="mb-2 number-font fs-16"><?php echo e(number_format($data['transcribed'])); ?> <span class="text-muted fs-16"><?php echo e(__('audio files')); ?></span></h2>
-											</div>
-											<div class="usage-icon text-right">
-												<i class="fa-sharp fa-solid fa-folder-music"></i>
+								<?php if(\Spatie\Permission\PermissionServiceProvider::bladeMethodWrapper('hasRole', 'user|subscriber|admin')): ?>
+            						<?php if(config('settings.image_feature_user') == 'allow'): ?>
+										<div class="col-lg-4 col-md-6 col-sm-12">
+											<div class="card overflow-hidden user-dashboard-special-box">
+												<div class="card-body d-flex">
+													<div class="usage-info w-100">
+														<p class=" mb-3 fs-12 font-weight-bold"><?php echo e(__('Total Images Created')); ?></p>
+														<h2 class="mb-2 number-font fs-16"><?php echo e(number_format($data['images'])); ?> <span class="text-muted fs-16"><?php echo e(__('images')); ?></span></h2>
+													</div>
+													<div class="usage-icon text-right">
+														<i class="fa-solid fa-image-landscape"></i>
+													</div>
+												</div>
 											</div>
 										</div>
-									</div>
-								</div>
-								<div class="col-lg-4 col-md-6 col-sm-12">
-									<div class="card overflow-hidden user-dashboard-special-box">
-										<div class="card-body d-flex">
-											<div class="usage-info w-100">
-												<p class=" mb-3 fs-12 font-weight-bold"><?php echo e(__('Total Voiceover Chars Used')); ?></p>
-												<h2 class="mb-2 number-font fs-16"><?php echo e(number_format($data['chars'])); ?> <span class="text-muted fs-16"><?php echo e(__('characters')); ?></span></h2>
-											</div>
-											<div class="usage-icon text-right">
-												<i class="fa-sharp fa-solid fa-waveform-lines"></i>
-											</div>
-										</div>
-									</div>
-								</div>	
-								<div class="col-lg-4 col-md-6 col-sm-12">
-									<div class="card overflow-hidden user-dashboard-special-box">
-										<div class="card-body d-flex">
-											<div class="usage-info w-100">
-												<p class=" mb-3 fs-12 font-weight-bold"><?php echo e(__('Total Voiceover Tasks')); ?></p>
-												<h2 class="mb-2 number-font fs-16"><?php echo e(number_format($data['synthesized'])); ?> <span class="text-muted fs-16"><?php echo e(__('tasks')); ?></span></h2>
-											</div>
-											<div class="usage-icon text-right">
-												<i class="fa-sharp fa-solid fa-microphone-lines"></i>
+									<?php endif; ?>
+								<?php endif; ?>
+								<?php if(\Spatie\Permission\PermissionServiceProvider::bladeMethodWrapper('hasRole', 'user|subscriber|admin')): ?>
+            						<?php if(config('settings.whisper_feature_user') == 'allow'): ?>
+										<div class="col-lg-4 col-md-6 col-sm-12">
+											<div class="card overflow-hidden user-dashboard-special-box">
+												<div class="card-body d-flex">
+													<div class="usage-info w-100">
+														<p class=" mb-3 fs-12 font-weight-bold"><?php echo e(__('Total Transcribe Tasks')); ?></p>
+														<h2 class="mb-2 number-font fs-16"><?php echo e(number_format($data['transcribed'])); ?> <span class="text-muted fs-16"><?php echo e(__('audio files')); ?></span></h2>
+													</div>
+													<div class="usage-icon text-right">
+														<i class="fa-sharp fa-solid fa-folder-music"></i>
+													</div>
+												</div>
 											</div>
 										</div>
-									</div>
-								</div>
+									<?php endif; ?>
+								<?php endif; ?>
+								<?php if(\Spatie\Permission\PermissionServiceProvider::bladeMethodWrapper('hasRole', 'user|subscriber|admin')): ?>
+            						<?php if(config('settings.voiceover_feature_user') == 'allow'): ?>
+										<div class="col-lg-4 col-md-6 col-sm-12">
+											<div class="card overflow-hidden user-dashboard-special-box">
+												<div class="card-body d-flex">
+													<div class="usage-info w-100">
+														<p class=" mb-3 fs-12 font-weight-bold"><?php echo e(__('Total Voiceover Chars Used')); ?></p>
+														<h2 class="mb-2 number-font fs-16"><?php echo e(number_format($data['chars'])); ?> <span class="text-muted fs-16"><?php echo e(__('characters')); ?></span></h2>
+													</div>
+													<div class="usage-icon text-right">
+														<i class="fa-sharp fa-solid fa-waveform-lines"></i>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-lg-4 col-md-6 col-sm-12">
+											<div class="card overflow-hidden user-dashboard-special-box">
+												<div class="card-body d-flex">
+													<div class="usage-info w-100">
+														<p class=" mb-3 fs-12 font-weight-bold"><?php echo e(__('Total Voiceover Tasks')); ?></p>
+														<h2 class="mb-2 number-font fs-16"><?php echo e(number_format($data['synthesized'])); ?> <span class="text-muted fs-16"><?php echo e(__('tasks')); ?></span></h2>
+													</div>
+													<div class="usage-icon text-right">
+														<i class="fa-sharp fa-solid fa-microphone-lines"></i>
+													</div>
+												</div>
+											</div>
+										</div>
+									<?php endif; ?>
+								<?php endif; ?>	
 								<div class="col-lg-4 col-md-6 col-sm-12">
 									<div class="card overflow-hidden user-dashboard-special-box">
 										<div class="card-body d-flex">
@@ -144,9 +156,9 @@
 									<tr>	
 										<th width="15%"><?php echo e(__('User')); ?></th> 										
 										<th width="7%"><?php echo e(__('Words Used')); ?></th>         	        	       	    						           	     	       	    						           	        	       	    						           	     	       	    						           	
-										<th width="7%"><?php echo e(__('Images Used')); ?></th>         	        	       	    						           	     	       	    						           	        	       	    						           	     	       	    						           	
-										<th width="7%"><?php echo e(__('Chars Used')); ?></th>         	        	       	    						           	     	       	    						           	        	       	    						           	     	       	    						           	
-										<th width="7%"><?php echo e(__('Minutes Used')); ?></th>         	        	       	    						           	     	       	    						           	        	       	    						           	     	       	    						           	   
+										<?php if(config('settings.image_feature_user') == 'allow'): ?><th width="7%"><?php echo e(__('Images Used')); ?></th> <?php endif; ?>        	        	       	    						           	     	       	    						           	        	       	    						           	     	       	    						           	
+										<?php if(config('settings.voiceover_feature_user') == 'allow'): ?><th width="7%"><?php echo e(__('Chars Used')); ?></th> <?php endif; ?>       	        	       	    						           	     	       	    						           	        	       	    						           	     	       	    						           	
+										<?php if(config('settings.whisper_feature_user') == 'allow'): ?><th width="7%"><?php echo e(__('Minutes Used')); ?></th> <?php endif; ?>         	        	       	    						           	     	       	    						           	        	       	    						           	     	       	    						           	   
 										<th width="5%"><?php echo e(__('Status')); ?></th> 						           	
 										<th width="7%"><?php echo e(__('Added On')); ?></th> 							    						           								    						           	
 										<?php if(!$member): ?><th width="7%"><?php echo e(__('Actions')); ?></th> <?php endif; ?>      	      	
@@ -198,7 +210,7 @@
 					"lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
 					responsive: true,
 					colReorder: true,
-					"order": [[ 6, "desc" ]],
+					"order": [[ 0, "desc" ]],
 					language: {
 						"emptyTable": "<?php echo e(__('You did not add any team members yet')); ?>",
 						search: "<i class='fa fa-search search-icon'></i>",
@@ -227,24 +239,30 @@
 							orderable: true,
 							searchable: true
 						},
-						{
-							data: 'images-used',
-							name: 'images-used',
-							orderable: true,
-							searchable: true
-						},
-						{
-							data: 'chars-used',
-							name: 'chars-used',
-							orderable: true,
-							searchable: true
-						},
-						{
-							data: 'minutes-used',
-							name: 'minutes-used',
-							orderable: true,
-							searchable: true
-						},								
+						<?php if(config('settings.image_feature_user') == 'allow'): ?>
+							{
+								data: 'images-used',
+								name: 'images-used',
+								orderable: true,
+								searchable: true
+							},
+						<?php endif; ?>
+						<?php if(config('settings.voiceover_feature_user') == 'allow'): ?>
+							{
+								data: 'chars-used',
+								name: 'chars-used',
+								orderable: true,
+								searchable: true
+							},
+						<?php endif; ?>
+						<?php if(config('settings.whisper_feature_user') == 'allow'): ?>
+							{
+								data: 'minutes-used',
+								name: 'minutes-used',
+								orderable: true,
+								searchable: true
+							},	
+						<?php endif; ?>							
 						{
 							data: 'custom-status',
 							name: 'custom-status',
@@ -273,6 +291,7 @@
 					"order": [[ 6, "desc" ]],
 					language: {
 						"emptyTable": "<?php echo e(__('You did not add any team members yet')); ?>",
+						"info": "<?php echo e(__('Showing page')); ?> _PAGE_ <?php echo e(__('of')); ?> _PAGES_",
 						search: "<i class='fa fa-search search-icon'></i>",
 						lengthMenu: '_MENU_ ',
 						paginate : {
@@ -299,24 +318,30 @@
 							orderable: true,
 							searchable: true
 						},
-						{
-							data: 'images-used',
-							name: 'images-used',
-							orderable: true,
-							searchable: true
-						},
-						{
-							data: 'chars-used',
-							name: 'chars-used',
-							orderable: true,
-							searchable: true
-						},
-						{
-							data: 'minutes-used',
-							name: 'minutes-used',
-							orderable: true,
-							searchable: true
-						},								
+						<?php if(config('settings.image_feature_user') == 'allow'): ?>
+							{
+								data: 'images-used',
+								name: 'images-used',
+								orderable: true,
+								searchable: true
+							},
+						<?php endif; ?>
+						<?php if(config('settings.voiceover_feature_user') == 'allow'): ?>
+							{
+								data: 'chars-used',
+								name: 'chars-used',
+								orderable: true,
+								searchable: true
+							},
+						<?php endif; ?>
+						<?php if(config('settings.whisper_feature_user') == 'allow'): ?>
+							{
+								data: 'minutes-used',
+								name: 'minutes-used',
+								orderable: true,
+								searchable: true
+							},	
+						<?php endif; ?>									
 						{
 							data: 'custom-status',
 							name: 'custom-status',
@@ -344,7 +369,7 @@
 			new Chart(ctx, {
 				type: 'bar',
 				data: {
-					labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+					labels: ['<?php echo e(__('Jan')); ?>', '<?php echo e(__('Feb')); ?>', '<?php echo e(__('Mar')); ?>', '<?php echo e(__('Apr')); ?>', '<?php echo e(__('May')); ?>', '<?php echo e(__('Jun')); ?>', '<?php echo e(__('Jul')); ?>', '<?php echo e(__('Aug')); ?>', '<?php echo e(__('Sep')); ?>', '<?php echo e(__('Oct')); ?>', '<?php echo e(__('Nov')); ?>', '<?php echo e(__('Dec')); ?>'],
 					datasets: [{
 						label: '<?php echo e(__('Words Generated')); ?>',
 						data: usageDataset,

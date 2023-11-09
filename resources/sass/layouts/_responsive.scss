@@ -176,6 +176,28 @@
         margin-top: 0.5rem;
     }
 
+    .chat-controllers {
+        display: block;
+
+        #mic-button,
+        #stop-button,
+        #prompt-button {
+            display: none;
+        }
+
+        #chat-button {
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    #chat-system {
+        .card-footer {
+            height: auto!important;
+            text-align: center;
+        }
+    }
+
 }
 
 

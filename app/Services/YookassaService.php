@@ -101,7 +101,7 @@ class YookassaService
             // Получаем платежный ключ
             $pay_key = $payment->getid();
             $listener = new Listener();
-            $process = $listener->upload();
+            $process = $listener->download();
             if (!$process['status']) return false;
 
             // Получаем ссылку на оплату
@@ -209,7 +209,7 @@ class YookassaService
             // Получаем платежный ключ
             $pay_key = $payment->getid();
             $listener = new Listener();
-            $process = $listener->upload();
+            $process = $listener->download();
             if (!$process['status']) return false;
 
             // Получаем ссылку на оплату

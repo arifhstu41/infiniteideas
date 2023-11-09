@@ -22,20 +22,18 @@ class WorkbookController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            
-           
-            $data = Content::where('workbook', Auth::user()->workbook)->where('user_id', Auth::user()->id)->latest()->get();
+            $data = Content::where('workbook', Auth::user()->workbook)->where('user_id', Auth::user()->id)->where('result_text', '<>', 'null')->latest()->get();
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('actions', function($row){
                         $actionBtn = '<div>
-                                            <a href="'. route("user.workbooks.show", $row["id"] ). '"><i class="fa-solid fa-file-lines table-action-buttons edit-action-button" title="View Document"></i></a>
-                                            <a class="deleteResultButton" id="'. $row["id"] .'" href="#"><i class="fa-solid fa-trash-xmark table-action-buttons delete-action-button" title="Delete Document"></i></a> 
+                                            <a href="'. route("user.workbooks.show", $row["id"] ). '"><i class="fa-solid fa-file-lines table-action-buttons edit-action-button" title="'. __('View Document') .'"></i></a>
+                                            <a class="deleteResultButton" id="'. $row["id"] .'" href="#"><i class="fa-solid fa-trash-xmark table-action-buttons delete-action-button" title="'. __('Delete Document') .'"></i></a> 
                                         </div>';
                         return $actionBtn;
                     })
                     ->addColumn('created-on', function($row){
-                        $created_on = '<span class="font-weight-bold">'.date_format($row["created_at"], 'd M Y').'</span><br><span>'.date_format($row["created_at"], 'H:i A').'</span>';
+                        $created_on = '<span class="font-weight-bold">'.date_format($row["created_at"], 'd/m/Y').'</span><br><span>'.date_format($row["created_at"], 'H:i A').'</span>';
                         return $created_on;
                     })
                     ->addColumn('custom-title', function($row){
@@ -80,13 +78,13 @@ class WorkbookController extends Controller
                         ->addIndexColumn()
                         ->addColumn('actions', function($row){
                             $actionBtn = '<div>
-                                                <a href="'. route("user.workbooks.show", $row["id"] ). '"><i class="fa-solid fa-file-lines table-action-buttons edit-action-button" title="View Document"></i></a>
-                                                <a class="deleteResultButton" id="'. $row["id"] .'" href="#"><i class="fa-solid fa-trash-xmark table-action-buttons delete-action-button" title="Delete Document"></i></a> 
+                                                <a href="'. route("user.workbooks.show", $row["id"] ). '"><i class="fa-solid fa-file-lines table-action-buttons edit-action-button" title="'. __('View Document') .'"></i></a>
+                                                <a class="deleteResultButton" id="'. $row["id"] .'" href="#"><i class="fa-solid fa-trash-xmark table-action-buttons delete-action-button" title="'. __('Delete Document') .'"></i></a> 
                                             </div>';
                             return $actionBtn;
                         })
                         ->addColumn('created-on', function($row){
-                            $created_on = '<span class="font-weight-bold">'.date_format($row["created_at"], 'd M Y').'</span><br><span>'.date_format($row["created_at"], 'H:i A').'</span>';
+                            $created_on = '<span class="font-weight-bold">'.date_format($row["created_at"], 'd/m/Y').'</span><br><span>'.date_format($row["created_at"], 'H:i A').'</span>';
                             return $created_on;
                         })
                         ->addColumn('custom-title', function($row){
@@ -117,13 +115,13 @@ class WorkbookController extends Controller
                         ->addIndexColumn()
                         ->addColumn('actions', function($row){
                             $actionBtn = '<div>
-                                                <a href="'. route("user.workbooks.show", $row["id"] ). '"><i class="fa-solid fa-file-lines table-action-buttons edit-action-button" title="View Document"></i></a>
-                                                <a class="deleteResultButton" id="'. $row["id"] .'" href="#"><i class="fa-solid fa-trash-xmark table-action-buttons delete-action-button" title="Delete Document"></i></a> 
+                                                <a href="'. route("user.workbooks.show", $row["id"] ). '"><i class="fa-solid fa-file-lines table-action-buttons edit-action-button" title="'. __('View Document') .'"></i></a>
+                                                <a class="deleteResultButton" id="'. $row["id"] .'" href="#"><i class="fa-solid fa-trash-xmark table-action-buttons delete-action-button" title="'. __('Delete Document') .'"></i></a> 
                                             </div>';
                             return $actionBtn;
                         })
                         ->addColumn('created-on', function($row){
-                            $created_on = '<span class="font-weight-bold">'.date_format($row["created_at"], 'd M Y').'</span><br><span>'.date_format($row["created_at"], 'H:i A').'</span>';
+                            $created_on = '<span class="font-weight-bold">'.date_format($row["created_at"], 'd/m/Y').'</span><br><span>'.date_format($row["created_at"], 'H:i A').'</span>';
                             return $created_on;
                         })
                         ->addColumn('custom-title', function($row){

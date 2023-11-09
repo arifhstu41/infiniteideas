@@ -23,7 +23,7 @@
 				<div class="card-header p-4 pl-5 block">
 					<p class="card-title mb-4">{{ __('Ticket Subject') }}: <span class="text-info">{{ $ticket->subject }}</span></p>
 					<p class="card-title">{{ __('Ticket') }} ID: <span class="text-info">{{ $ticket->ticket_id }}</span></p>
-					<span class="cell-box fs-14 support-header support-{{ strtolower($ticket->status) }}">{{ $ticket->status }}</span>
+					<span class="cell-box fs-14 support-header support-{{ strtolower($ticket->status) }}">{{ __($ticket->status) }}</span>
 				</div>
 				<div class="card-body pt-5">	
 					<div class="row">	

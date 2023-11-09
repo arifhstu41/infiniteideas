@@ -65,7 +65,7 @@
 									<h6>{{ __('Template Category') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
 									<select id="image-feature-user" name="category" class="form-select" data-placeholder="{{ __('Select template category') }}">
 										@foreach ($categories as $category)
-											<option value="{{ $category->code }}"  @if ($id->group == $category->code) selected @endif> {{ ucfirst($category->name) }}</option>
+											<option value="{{ $category->code }}"  @if ($id->group == $category->code) selected @endif> {{ __(ucfirst($category->name)) }}</option>
 										@endforeach																																																														
 									</select>
 								</div>

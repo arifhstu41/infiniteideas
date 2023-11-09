@@ -47,7 +47,10 @@ class SubscriptionPlan extends Model
         'image_storage_days',
         'voiceover_storage_days',
         'whisper_storage_days',
-        'team_members'
+        'team_members',
+        'personal_openai_api',
+        'personal_sd_api',
+        'days'
     ];
 
     /**

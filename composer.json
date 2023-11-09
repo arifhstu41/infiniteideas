@@ -6,10 +6,12 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
+        "authorizenet/authorizenet": "^2.0",
         "bacon/bacon-qr-code": "^2.0",
         "braintree/braintree_php": "^6.11",
         "google/cloud-text-to-speech": "^1.5",
         "guzzlehttp/guzzle": "^7.7.0",
+        "iyzico/iyzipay-php": "^2.0",
         "kingflamez/laravelrave": "*",
         "konekt/pdf-invoice": "^1.13",
         "laravel/framework": "^9.11",

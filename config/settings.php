@@ -69,6 +69,9 @@ return [
     'team_members_feature' => env('DAVINCI_SETTINGS_TEAM_MEMBERS_FEATURE'),
     'team_members_quantity_user' => env('DAVINCI_SETTINGS_TEAM_MEMBERS_QUANTITY'),
 
+    'personal_openai_api' => env('DAVINCI_SETTINGS_PERSONAL_OPENAI_API_KEY'),
+    'personal_sd_api' => env('DAVINCI_SETTINGS_PERSONAL_SD_API_KEY'),
+
     /*
     |--------------------------------------------------------------------------
     | Voiceover Settings

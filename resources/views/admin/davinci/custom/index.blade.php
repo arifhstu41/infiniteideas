@@ -63,7 +63,7 @@
 									<h6>{{ __('Template Category') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
 									<select id="image-feature-user" name="category" class="form-select" data-placeholder="{{ __('Select template category') }}">
 										@foreach ($categories as $category)
-											<option value="{{ $category->code }}"> {{ ucfirst($category->name) }}</option>
+											<option value="{{ $category->code }}"> {{ __(ucfirst($category->name)) }}</option>
 										@endforeach																																																													
 									</select>
 								</div>
@@ -206,6 +206,7 @@
 				"order": [[3, "asc"]],
 				language: {
 					"emptyTable": "<div><img id='no-results-img' src='{{ URL::asset('img/files/no-result.png') }}'><br>No custom templates created yet</div>",
+					"info": "{{ __('Showing page') }} _PAGE_ {{ __('of') }} _PAGES_",
 					search: "<i class='fa fa-search search-icon'></i>",
 					lengthMenu: '_MENU_ ',
 					paginate : {

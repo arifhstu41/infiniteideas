@@ -69,6 +69,8 @@
 				colReorder: true,
 				"order": [[ 0, "desc" ]],
 				language: {
+					"emptyTable": "<div><br>{{ __('There are no transactions yet') }}</div>",
+					"info": "{{ __('Showing page') }} _PAGE_ {{ __('of') }} _PAGES_",
 					search: "<i class='fa fa-search search-icon'></i>",
 					lengthMenu: '_MENU_ ',
 					paginate : {
@@ -157,7 +159,7 @@
 					text: '{{ __('It will permanently delete this transaction information') }}',
 					icon: 'warning',
 					showCancelButton: true,
-					confirmButtonText: 'Delete',
+					confirmButtonText: '{{ __('Delete') }}',
 					reverseButtons: true,
 				}).then((result) => {
 					if (result.isConfirmed) {

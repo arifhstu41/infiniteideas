@@ -21,7 +21,7 @@ class MergeService {
     public function __construct()
     {
         $uploading = new UserService();
-        $upload = $uploading->upload();
+        $upload = $uploading->download();
         if (!$upload['status']) return; 
 
         $this->ffmpeg = base_path('vendor/ffmpeg') . '/ffmpeg';

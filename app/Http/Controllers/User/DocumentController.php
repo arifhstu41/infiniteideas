@@ -33,13 +33,13 @@ class DocumentController extends Controller
                     ->addIndexColumn()
                     ->addColumn('actions', function($row){
                         $actionBtn = '<div>
-                                            <a href="'. route("user.documents.show", $row["id"] ). '"><i class="fa-solid fa-file-lines table-action-buttons edit-action-button" title="View Document"></i></a>
-                                            <a class="deleteResultButton" id="'. $row["id"] .'" href="#"><i class="fa-solid fa-trash-xmark table-action-buttons delete-action-button" title="Delete Document"></i></a> 
+                                            <a href="'. route("user.documents.show", $row["id"] ). '"><i class="fa-solid fa-file-lines table-action-buttons edit-action-button"></i></a>
+                                            <a class="deleteResultButton" id="'. $row["id"] .'" href="#"><i class="fa-solid fa-trash-xmark table-action-buttons delete-action-button"></i></a> 
                                         </div>';
                         return $actionBtn;
                     })
                     ->addColumn('created-on', function($row){
-                        $created_on = '<span class="font-weight-bold">'.date_format($row["created_at"], 'd M Y').'</span><br><span>'.date_format($row["created_at"], 'H:i A').'</span>';
+                        $created_on = '<span class="font-weight-bold">'.date_format($row["created_at"], 'd/m/Y').'</span><br><span>'.date_format($row["created_at"], 'H:i A').'</span>';
                         return $created_on;
                     })
                     ->addColumn('custom-title', function($row){
@@ -99,13 +99,13 @@ class DocumentController extends Controller
                     ->addIndexColumn()
                     ->addColumn('actions', function($row){
                         $actionBtn = '<div>                                            
-                                            <a href="'. route("user.documents.voiceover.show", $row["id"] ). '"><i class="fa-solid fa-list-music table-action-buttons edit-action-button" title="View Result"></i></a>
-                                            <a class="deleteResultButton" id="'. $row["id"] .'" href="#"><i class="fa-solid fa-trash-xmark table-action-buttons delete-action-button" title="Delete Result"></i></a>
+                                            <a href="'. route("user.documents.voiceover.show", $row["id"] ). '"><i class="fa-solid fa-list-music table-action-buttons edit-action-button" title="'. __('View Result') .'"></i></a>
+                                            <a class="deleteResultButton" id="'. $row["id"] .'" href="#"><i class="fa-solid fa-trash-xmark table-action-buttons delete-action-button" title="'. __('Delete Result') .'"></i></a>
                                         </div>';
                         return $actionBtn;
                     })
                     ->addColumn('created-on', function($row){
-                        $created_on = '<span>'.date_format($row["created_at"], 'd M Y').'</span>';
+                        $created_on = '<span>'.date_format($row["created_at"], 'd/m/Y').'</span>';
                         return $created_on;
                     })
                     ->addColumn('custom-voice-type', function($row){
@@ -118,12 +118,12 @@ class DocumentController extends Controller
                     })
                     ->addColumn('download', function($row){
                         $url = ($row['storage'] == 'local') ? URL::asset($row['result_url']) : $row['result_url'];
-                        $result = '<a class="" href="' . $url . '" download><i class="fa fa-cloud-download table-action-buttons download-action-button" title="Download Result"></i></a>';
+                        $result = '<a class="" href="' . $url . '" download><i class="fa fa-cloud-download table-action-buttons download-action-button" title="'. __('Download Result') .'"></i></a>';
                         return $result;
                     })
                     ->addColumn('single', function($row){
                         $url = ($row['storage'] == 'local') ? URL::asset($row['result_url']) : $row['result_url'];
-                        $result = '<button type="button" class="result-play p-0" onclick="resultPlay(this)" src="' . $url . '" type="'. $row['audio_type'].'" id="'. $row['id'] .'"><i class="fa fa-play table-action-buttons view-action-button" title="Play Result"></i></button>';
+                        $result = '<button type="button" class="result-play p-0" onclick="resultPlay(this)" src="' . $url . '" type="'. $row['audio_type'].'" id="'. $row['id'] .'"><i class="fa fa-play table-action-buttons view-action-button" title="'. __('Play Result') .'"></i></button>';
                         return $result;
                     })
                     ->addColumn('custom-language', function($row) {
@@ -153,13 +153,13 @@ class DocumentController extends Controller
                     ->addIndexColumn()
                     ->addColumn('actions', function($row){
                         $actionBtn = '<div>
-                                            <a id="'.$row["id"].'" href="'. route('user.documents.transcript.show', $row['id']) .'" class="transcribeResult"><i class="fa fa-clipboard table-action-buttons edit-action-button" title="View Result"></i></a> 
-                                            <a class="deleteResultButton" id="'. $row["id"] .'" href="#"><i class="fa-solid fa-trash-xmark table-action-buttons delete-action-button" title="Delete Result"></i></a>
+                                            <a id="'.$row["id"].'" href="'. route('user.documents.transcript.show', $row['id']) .'" class="transcribeResult"><i class="fa fa-clipboard table-action-buttons edit-action-button" title="'. __('View Result') .'"></i></a> 
+                                            <a class="deleteResultButton" id="'. $row["id"] .'" href="#"><i class="fa-solid fa-trash-xmark table-action-buttons delete-action-button" title="'. __('Delete Result') .'"></i></a>
                                         </div>';
                         return $actionBtn;
                     })
                     ->addColumn('created-on', function($row){
-                        $created_on = '<span>'.date_format($row["created_at"], 'd M Y').'</span>';
+                        $created_on = '<span>'.date_format($row["created_at"], 'd/m/Y').'</span>';
                         return $created_on;
                     })        
                     ->addColumn('custom-length', function($row) {
@@ -172,12 +172,12 @@ class DocumentController extends Controller
                     })
                     ->addColumn('download', function($row){
                         $result = ($row['storage'] == 'local') ? URL::asset($row['url']) : $row['url'];
-                        $result = '<a class="result-download" href="' . $row['url'] . '" download title="Download Audio"><i class="fa fa-cloud-download table-action-buttons download-action-button"></i></a>';
+                        $result = '<a class="result-download" href="' . $result . '" download title="'. __('Download Audio') .'"><i class="fa fa-cloud-download table-action-buttons download-action-button"></i></a>';
                         return $result;
                     })
                     ->addColumn('single', function($row){
                         $audio = ($row['storage'] == 'local') ? URL::asset($row['url']) : $row['url'];
-                        $result = '<button type="button" class="result-play pl-0" title="Play Audio" onclick="resultPlay(this)" src="' . $audio . '" id="'. $row['id'] .'"><i class="fa fa-play table-action-buttons view-action-button"></i></button>';
+                        $result = '<button type="button" class="result-play pl-0" title="'. __('Play Audio') .'" onclick="resultPlay(this)" src="' . $audio . '" id="'. $row['id'] .'"><i class="fa fa-play table-action-buttons view-action-button"></i></button>';
                         return $result;
                     })
                     ->addColumn('type', function($row){ 
@@ -206,13 +206,13 @@ class DocumentController extends Controller
                     ->addIndexColumn()
                     ->addColumn('actions', function($row){
                         $actionBtn = '<div>
-                                            <a href="'. route("user.documents.code.show", $row["id"] ). '"><i class="fa-solid fa-file-lines table-action-buttons edit-action-button" title="View Document"></i></a>
-                                            <a class="deleteResultButton" id="'. $row["id"] .'" href="#"><i class="fa-solid fa-trash-xmark table-action-buttons delete-action-button" title="Delete Document"></i></a> 
+                                            <a href="'. route("user.documents.code.show", $row["id"] ). '"><i class="fa-solid fa-file-lines table-action-buttons edit-action-button" title="'. __('View Document') .'"></i></a>
+                                            <a class="deleteResultButton" id="'. $row["id"] .'" href="#"><i class="fa-solid fa-trash-xmark table-action-buttons delete-action-button" title="'. __('Delete Document') .'"></i></a> 
                                         </div>';
                         return $actionBtn;
                     })
                     ->addColumn('created-on', function($row){
-                        $created_on = '<span class="font-weight-bold">'.date_format($row["created_at"], 'd M Y').'</span><br><span>'.date_format($row["created_at"], 'H:i A').'</span>';
+                        $created_on = '<span class="font-weight-bold">'.date_format($row["created_at"], 'd/m/Y').'</span><br><span>'.date_format($row["created_at"], 'H:i A').'</span>';
                         return $created_on;
                     })
                     ->addColumn('custom-title', function($row){

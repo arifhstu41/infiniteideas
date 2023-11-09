@@ -406,6 +406,185 @@ class UserService
 			);
 			$res = json_decode($get_data, true);
 		}
+
+		return $res;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public function prompt($time_based_check = false, $license = false, $client = false){
+		if(!empty($license)&&!empty($client)){
+			$data_array =  array(
+				"product_id"  => $this->product_id,
+				"license_file" => null,
+				"license_code" => $license,
+				"client_name" => $client
+			);
+		}else{
+			if(is_file($this->license_file)){
+				$data_array =  array(
+					"product_id"  => $this->product_id,
+					"license_file" => file_get_contents($this->license_file),
+					"license_code" => null,
+					"client_name" => null
+				);
+			}else{
+				$data_array =  array();
+			}
+		} 
+		$res = array('status' => TRUE, 'message' => 'Verified! Thanks for purchasing.');
+		if($time_based_check && $this->verification_period > 0){
+			ob_start();
+			if(session_status() == PHP_SESSION_NONE){
+				session_start();
+			}
+			$type = (int) $this->verification_period;
+			$today = date('d-m-Y');
+			if(empty($_SESSION["572c216d78723bd"])){
+				$_SESSION["572c216d78723bd"] = '00-00-0000';
+			}
+
+			$type_text = 'download';
+			
+			if(strtotime($today) >= strtotime($_SESSION["572c216d78723bd"])){
+				$get_data = $this->call_api(
+					'POST',
+					$this->api_url.'api/verify_license', 
+					json_encode($data_array)
+				);
+				$res = json_decode($get_data, true);
+				if($res['status']==true){
+					$tomo = date('d-m-Y', strtotime($today. ' + '.$type_text));
+					$_SESSION["572c216d78723bd"] = $tomo;
+				}
+			}
+			ob_end_clean();
+		}else{
+			$get_data = $this->call_api(
+				'POST',
+				$this->api_url.'api/verify_license', 
+				json_encode($data_array)
+			);
+			$res = json_decode($get_data, true);
+		}
+
 		return $res;
 	}
 

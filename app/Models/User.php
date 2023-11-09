@@ -56,6 +56,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'member_use_credits_voiceover',
         'member_use_credits_speech',
         'member_use_credits_image',
+        'personal_openai_key',
+        'personal_sd_key',
+        'hidden_plan',
+        'used_free_tier',
     ];
 
     /**

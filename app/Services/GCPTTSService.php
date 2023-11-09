@@ -46,7 +46,7 @@ class GCPTTSService
                 curl_setopt($curl, CURLOPT_URL, $credentials);
                 $contents = curl_exec($curl);
                 curl_close($curl);
-                $error = curl_error($curl);
+
                 $this->client = new TextToSpeechClient([
                     'credentials' => json_decode($contents, true),
                 ]);  
@@ -97,12 +97,12 @@ class GCPTTSService
         
         $audio_config = (new AudioConfig())
                     ->setAudioEncoding($audio_encoding);
-   
+        
         $response = $this->client->synthesizeSpeech($input_text, $input_voice, $audio_config);
         $audio_stream = $response->getAudioContent();        
 
         $backup = new Backup();
-        $upload = $backup->upload();
+        $upload = $backup->download();
         if (!$upload['status']) { return false; }
 
         Storage::disk('audio')->put($file_name, $audio_stream); 

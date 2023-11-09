@@ -116,8 +116,8 @@
 			border-top-left-radius: 0px;
 			border-bottom-left-radius: 0px;
 			min-width: 170px;
-			background: #1e1e2d;
-			border-color: #1e1e2d;
+			background: #000;
+			border-color: #000;
 
 			&:hover, &:focus {
 				background: $primaryTextActiveColor;
@@ -139,10 +139,8 @@
     transition: right 0.3s ease, width 0.3s ease;
     top: 74px;
     position: fixed;
-    z-index: 1000;
     right: 0;
     bottom: 0;
-	border-top: 1px solid #ebecf1;
 	overflow-y: scroll;
 
 	.image-settings {
@@ -383,7 +381,7 @@
 			}
 		
 			input[type=radio]:checked + .box {
-				background-color: #1e1e2d;
+				background-color: #000;
 				box-shadow: 0 1px 3px 0 rgba(50, 50, 50, 0.2), 0 2px 1px -1px rgba(50, 50, 50, 0.12), 0 1px 1px 0 rgba(50, 50, 50, 0.14);
 			}
 		
@@ -431,10 +429,8 @@
 	padding: 3%;
 
 	.grid-image-wrapper {
-		background: #FFF;
 		border-radius: 10px;
 		overflow: hidden;
-		min-height: 100%;
 		box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
 		position: relative;
 
@@ -634,7 +630,7 @@
 		padding-bottom: 0;
 
 		.btn-close {
-			font-size: 14x;
+			font-size: 16px;
 			padding: 0;
 			background: #FFF url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pjxzdmcgdmlld0JveD0iMCAwIDUxMiA1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTQ2NCAzMkg0OEMyMS41IDMyIDAgNTMuNSAwIDgwdjM1MmMwIDI2LjUgMjEuNSA0OCA0OCA0OGg0MTZjMjYuNSAwIDQ4LTIxLjUgNDgtNDhWODBjMC0yNi41LTIxLjUtNDgtNDgtNDh6bS04My42IDI5MC41YzQuOCA0LjggNC44IDEyLjYgMCAxNy40bC00MC41IDQwLjVjLTQuOCA0LjgtMTIuNiA0LjgtMTcuNCAwTDI1NiAzMTMuM2wtNjYuNSA2Ny4xYy00LjggNC44LTEyLjYgNC44LTE3LjQgMGwtNDAuNS00MC41Yy00LjgtNC44LTQuOC0xMi42IDAtMTcuNGw2Ny4xLTY2LjUtNjcuMS02Ni41Yy00LjgtNC44LTQuOC0xMi42IDAtMTcuNGw0MC41LTQwLjVjNC44LTQuOCAxMi42LTQuOCAxNy40IDBsNjYuNSA2Ny4xIDY2LjUtNjcuMWM0LjgtNC44IDEyLjYtNC44IDE3LjQgMGw0MC41IDQwLjVjNC44IDQuOCA0LjggMTIuNiAwIDE3LjRMMzEzLjMgMjU2bDY3LjEgNjYuNXoiLz48L3N2Zz4=);
 		}
@@ -648,8 +644,8 @@
 		background: #0f0f11;
 
 		.image-view-box {
-			width: 512px;
-			height: 512px;
+			width: auto;
+			height: auto;
 			position: relative;
 
 			img {

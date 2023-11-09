@@ -16,16 +16,12 @@ class ChatHistory extends Model
      */
     protected $fillable = [
         'user_id',
-        'chat_code',
-        'message_code',
-        'chat',
-        'messages',
-        'favorite',
-        'title'
+        'conversation_id',
+        'response',
+        'prompt',
+        'words',
     ];
 
-    protected $casts = [
-        'chat' => 'array',
-      ];
+
 }
  

@@ -85,7 +85,7 @@
 											<label class="custom-switch">
 												<input type="checkbox" name="enable-paypal" class="custom-switch-input" @if (config('services.paypal.enable')  == 'on') checked @endif>
 												<span class="custom-switch-indicator"></span>
-												<span class="custom-switch-description">Use PayPal Prepaid</span>
+												<span class="custom-switch-description">{{ __('Use PayPal Prepaid') }}</span>
 											</label>
 										</div>
 									</div>
@@ -94,7 +94,7 @@
 											<label class="custom-switch">
 												<input type="checkbox" name="enable-paypal-subscription" class="custom-switch-input" @if (config('services.paypal.subscription')  == 'on') checked @endif>
 												<span class="custom-switch-indicator"></span>
-												<span class="custom-switch-description">Use Paypal Subscription</span>
+												<span class="custom-switch-description">{{ __('Use Paypal Subscription') }}</span>
 											</label>
 										</div>
 									</div>
@@ -103,7 +103,7 @@
 								<div class="row">
 									<div class="col-lg-6 col-md-6 col-sm-12">								
 										<div class="input-box">								
-											<h6>PayPal Client ID <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
+											<h6>{{ __('PayPal Client ID') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
 											<div class="form-group">							    
 												<input type="text" class="form-control @error('paypal_client_id') is-danger @enderror" id="paypal_client_id" name="paypal_client_id" value="{{ config('services.paypal.client_id') }}" autocomplete="off">
 											</div> 
@@ -115,7 +115,7 @@
 
 									<div class="col-lg-6 col-md-6 col-sm-12">
 										<div class="input-box">								
-											<h6>PayPal Client Secret <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6> 
+											<h6>{{ __('PayPal Client Secret') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6> 
 											<div class="form-group">							    
 												<input type="text" class="form-control @error('paypal_client_secret') is-danger @enderror" id="paypal_client_secret" name="paypal_client_secret" value="{{ config('services.paypal.client_secret') }}" autocomplete="off">
 											</div> 
@@ -127,7 +127,7 @@
 
 									<div class="col-lg-6 col-md-6 col-sm-12">
 										<div class="input-box">								
-											<h6>Paypal Webhook URI <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6> 
+											<h6>{{ __('Paypal Webhook URI') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6> 
 											<div class="form-group">							    
 												<input type="text" class="form-control @error('paypal_webhook_uri') is-danger @enderror" id="paypal_webhook_uri" name="paypal_webhook_uri" value="{{ config('services.paypal.webhook_uri') }}" autocomplete="off">
 											</div> 
@@ -139,7 +139,7 @@
 
 									<div class="col-lg-6 col-md-6 col-sm-12">
 										<div class="input-box">								
-											<h6>Paypal Webhook ID <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6> 
+											<h6>{{ __('Paypal Webhook ID') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6> 
 											<div class="form-group">							    
 												<input type="text" class="form-control @error('paypal_webhook_id') is-danger @enderror" id="paypal_webhook_id" name="paypal_webhook_id" value="{{ config('services.paypal.webhook_id') }}" autocomplete="off">
 											</div> 
@@ -151,7 +151,7 @@
 
 									<div class="col-lg-6 col-md-6 col-sm-12">
 										<div class="input-box">								
-											<h6>PayPal Base URI <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6> 
+											<h6>{{ __('PayPal Base URI') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6> 
 											<select id="paypal-url" name="paypal_base_uri" class="form-select" data-placeholder="{{ __('Choose Payment Option') }}:">			
 												<option value="https://api-m.paypal.com" @if (config('services.paypal.base_uri')  == 'https://api-m.paypal.com') selected @endif>Live URL</option>
 												<option value="https://api-m.sandbox.paypal.com" @if (config('services.paypal.base_uri')  == 'https://api-m.sandbox.paypal.com') selected @endif>Sandbox URL</option>
@@ -179,7 +179,7 @@
 											<label class="custom-switch">
 												<input type="checkbox" name="enable-stripe" class="custom-switch-input" @if (config('services.stripe.enable')  == 'on') checked @endif>
 												<span class="custom-switch-indicator"></span>
-												<span class="custom-switch-description">Use Stripe Prepaid</span>
+												<span class="custom-switch-description">{{ __('Use Stripe Prepaid') }}</span>
 											</label>
 										</div>
 									</div>
@@ -188,7 +188,7 @@
 											<label class="custom-switch">
 												<input type="checkbox" name="enable-stripe-subscription" class="custom-switch-input" @if (config('services.stripe.subscription')  == 'on') checked @endif>
 												<span class="custom-switch-indicator"></span>
-												<span class="custom-switch-description">Use Stripe Subscription</span>
+												<span class="custom-switch-description">{{ __('Use Stripe Subscription') }}</span>
 											</label>
 										</div>
 									</div>
@@ -732,6 +732,78 @@
 	
 							</div>
 						</div>
+
+
+						<div class="card border-0 special-shadow">							
+							<div class="card-body">
+
+								<h6 class="fs-12 font-weight-bold mb-4"><img src="{{ URL::asset('/img/payments/iyzico.svg') }}" alt="Midtrans" class="gateway-logo"><span class="text-primary">Iyzico</span> {{ __('Payment Gateway') }} <span class="text-primary">({{ __('All Plans') }})</span></h6>
+
+								<div class="row">
+									<div class="col-md-6 col-sm-12 mb-2">
+										<div class="form-group">
+											<label class="custom-switch">
+												<input type="checkbox" name="enable-iyzico" class="custom-switch-input" @if (config('services.iyzico.enable')  == 'on') checked @endif>
+												<span class="custom-switch-indicator"></span>
+												<span class="custom-switch-description">Use Iyzico Prepaid</span>
+											</label>
+										</div>
+									</div>
+									{{-- <div class="col-md-6 col-sm-12">
+										<div class="form-group mb-4">
+											<label class="custom-switch">
+												<input type="checkbox" name="enable-iyzico-subscription" class="custom-switch-input" @if (config('services.iyzico.subscription')  == 'on') checked @endif>
+												<span class="custom-switch-indicator"></span>
+												<span class="custom-switch-description">Use Iyzico Subscription</span>
+											</label>
+										</div>
+								  	</div> --}}
+								</div>
+
+								<div class="row">
+									<div class="col-lg-6 col-md-6 col-sm-12">
+										<!-- SECRET ACCESS KEY -->
+										<div class="input-box">								
+											<h6>Iyzico API Key <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6> 
+											<div class="form-group">							    
+												<input type="text" class="form-control @error('iyzico_api_key') is-danger @enderror" id="iyzico_api_key" name="iyzico_api_key" value="{{ config('services.iyzico.api_key') }}" autocomplete="off">
+											</div>
+											@error('iyzico_api_key')
+												<p class="text-danger">{{ $errors->first('iyzico_api_key') }}</p>
+											@enderror
+										</div> <!-- END SECRET ACCESS KEY -->
+									</div>
+
+									<div class="col-lg-6 col-md-6 col-sm-12">								
+										<!-- ACCESS KEY -->
+										<div class="input-box">								
+											<h6>Iyzico Secret Key <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
+											<div class="form-group">							    
+												<input type="text" class="form-control @error('iyzico_secret_key') is-danger @enderror" id="iyzico_secret_key" name="iyzico_secret_key" value="{{ config('services.iyzico.secret_key') }}" autocomplete="off">
+											</div> 
+											@error('iyzico_secret_key')
+												<p class="text-danger">{{ $errors->first('iyzico_secret_key') }}</p>
+											@enderror
+										</div> <!-- END ACCESS KEY -->
+									</div>										
+
+									<div class="col-lg-6 col-md-6 col-sm-12">
+										<div class="input-box">								
+											<h6>Iyzico Sandbox <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6> 
+											<select id="iyzico_sandbox" name="iyzico_sandbox" class="form-select">			
+												<option value=true @if (config('services.iyzico.sandbox')  == true) selected @endif>{{ __('Enable') }}</option>
+												<option value=false @if (config('services.iyzico.sandbox')  == false) selected @endif>{{ __('Disable') }}</option>
+											</select>
+											@error('iyzico_sandbox')
+												<p class="text-danger">{{ $errors->first('iyzico_sandbox') }}</p>
+											@enderror
+										</div> 
+									</div>
+									
+								</div>
+	
+							</div>
+						</div>
 	
 	
 						<div class="card border-0 special-shadow">							
@@ -885,7 +957,7 @@
 
 				<div class="card border-0">
 					<div class="card-header">
-						<h3 class="card-title"><span class="text-info">Cryptocurrency </span> {{ __('Payment') }}</h3>
+						<h3 class="card-title"><span class="text-info">{{ __('Cryptocurrency') }} </span> {{ __('Payment') }}</h3>
 					</div>
 					<div class="card-body pb-6">
 	
@@ -976,7 +1048,7 @@
 											<label class="custom-switch">
 												<input type="checkbox" name="enable-bank-subscription" class="custom-switch-input" @if (config('services.banktransfer.subscription')  == 'on') checked @endif>
 												<span class="custom-switch-indicator"></span>
-												<span class="custom-switch-description">Use Bank Transfer Subscription</span>
+												<span class="custom-switch-description">{{ __('Use Bank Transfer Subscription') }}</span>
 											</label>
 										</div>
 									</div>

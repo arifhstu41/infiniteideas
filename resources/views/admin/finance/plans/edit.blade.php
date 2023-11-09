@@ -39,6 +39,7 @@
 									<h6>{{ __('Plan Status') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
 									<select id="plan-status" name="plan-status" class="form-select" data-placeholder="{{ __('Select Plan Status') }}:">			
 										<option value="active" @if ($id->status == 'active') selected @endif>{{ __('Active') }}</option>
+										<option value="hidden" @if ($id->status == 'hidden') selected @endif>{{ __('Hidden') }}</option>
 										<option value="closed" @if ($id->status == 'closed') selected @endif>{{ __('Closed') }}</option>
 									</select>
 									@error('plan-status')
@@ -91,6 +92,7 @@
 										<option value="monthly" @if ($id->payment_frequency == 'monthly') selected @endif>{{ __('Monthly') }}</option>
 										<option value="yearly" @if ($id->payment_frequency == 'yearly') selected @endif>{{ __('Yearly') }}</option>
 										<option value="lifetime" @if ($id->payment_frequency == 'lifetime') selected @endif>{{ __('Lifetime') }}</option>
+										
 									</select>
 								</div> 						
 							</div>
@@ -116,6 +118,18 @@
 									</div> 
 									@error('free-plan')
 										<p class="text-danger">{{ $errors->first('free-plan') }}</p>
+									@enderror
+								</div> 						
+							</div>
+
+							<div class="col-lg-6 col-md-6 col-sm-12">							
+								<div class="input-box">								
+									<h6>{{ __('Free Plan Days') }}</h6>
+									<div class="form-group">							    
+										<input type="number" class="form-control" id="days" name="days" min=0 value="{{ $id->days }}">
+									</div> 
+									@error('days')
+										<p class="text-danger">{{ $errors->first('days') }}</p>
 									@enderror
 								</div> 						
 							</div>
@@ -211,7 +225,7 @@
 											<h6>{{ __('Words included in the Plan') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span> <span class="text-muted ml-3">({{ __('Renewed Monthly') }})</span></h6>
 											<div class="form-group">							    
 												<input type="number" class="form-control" id="words" name="words" value="{{ $id->words }}" required>
-												<span class="text-muted fs-10">{{ __('Each text generation task will count total input by user and output words by openai') }}</span>
+												<span class="text-muted fs-10">{{ __('Each text generation task counts output words created') }}. {{ __('Set as -1 for unlimited words') }}.</span>
 											</div> 
 											@error('words')
 												<p class="text-danger">{{ $errors->first('words') }}</p>
@@ -224,7 +238,7 @@
 											<h6>{{ __('Images included in the Plan') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span> <span class="text-muted ml-3">({{ __('Renewed Monthly') }})</span></h6>
 											<div class="form-group">							    
 												<input type="number" class="form-control" id="images" name="images" value="{{ $id->images }}" required>
-												<span class="text-muted fs-10">{{ __('Valid for all image sizes') }}</span>
+												<span class="text-muted fs-10">{{ __('Valid for all image sizes') }}. {{ __('Set as -1 for unlimited images') }}.</span>
 											</div> 
 											@error('images')
 												<p class="text-danger">{{ $errors->first('images') }}</p>
@@ -237,7 +251,7 @@
 											<h6>{{ __('Characters included in the Plan') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span> <span class="text-muted ml-3">({{ __('Renewed Monthly') }})</span></h6>
 											<div class="form-group">							    
 												<input type="number" class="form-control" id="characters" name="characters" value="{{ $id->characters }}" required>
-												<span class="text-muted fs-10">{{ __('For AI Voiceover feature') }}</span>
+												<span class="text-muted fs-10">{{ __('For AI Voiceover feature') }}. {{ __('Set as -1 for unlimited characters') }}.</span>
 											</div> 
 											@error('characters')
 												<p class="text-danger">{{ $errors->first('characters') }}</p>
@@ -250,7 +264,7 @@
 											<h6>{{ __('Minutes included in the Plan') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span><span class="text-muted ml-3">({{ __('Renewed Monthly') }})</span></h6>
 											<div class="form-group">							    
 												<input type="number" class="form-control" id="minutes" name="minutes" value="{{ $id->minutes }}" required>
-												<span class="text-muted fs-10">{{ __('For AI Speech to Text feature') }}</span>
+												<span class="text-muted fs-10">{{ __('For AI Speech to Text feature') }}. {{ __('Set as -1 for unlimited minutes') }}.</span>
 											</div> 
 											@error('minutes')
 												<p class="text-danger">{{ $errors->first('minutes') }}</p>
@@ -372,7 +386,27 @@
 												<option value=0 @if ($id->code_feature == false) selected @endif> {{ __('Deny') }}</option>																														
 											</select>
 										</div>
-									</div>							
+									</div>	
+									
+									<div class="col-lg-6 col-md-6 col-sm-12">
+										<div class="input-box">
+											<h6>{{ __('Personal OpenAI API Usage Feature') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
+											<select id="personal-openai-api" name="personal-openai-api" class="form-select">
+												<option value=1 @if ($id->personal_openai_api == true) selected @endif>{{ __('Allow') }}</option>
+												<option value=0 @if ($id->personal_openai_api == false) selected @endif>{{ __('Deny') }}</option>																																																																																																								
+											</select>
+										</div>
+									</div>
+		
+									<div class="col-lg-6 col-md-6 col-sm-12">
+										<div class="input-box">
+											<h6>{{ __('Personal Stable Diffusion API Usage Feature') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
+											<select id="personal-sd-api" name="personal-sd-api" class="form-select">
+												<option value=1 @if ($id->personal_sd_api == true) selected @endif>{{ __('Allow') }}</option>
+												<option value=0 @if ($id->personal_sd_api == false) selected @endif>{{ __('Deny') }}</option>																																																																																																								
+											</select>
+										</div>
+									</div>
 
 									<div class="col-lg-6 col-md-6 col-sm-12">							
 										<div class="input-box">								

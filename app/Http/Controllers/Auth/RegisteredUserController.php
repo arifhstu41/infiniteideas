@@ -118,10 +118,10 @@ class RegisteredUserController extends Controller
         $user->assignRole(config('settings.default_user'));
         $user->status = $status;
         $user->group = config('settings.default_user');
-        $user->available_words_prepaid = config('settings.free_tier_words');
-        $user->available_images_prepaid = config('settings.free_tier_images');
-        $user->available_chars_prepaid = config('settings.voiceover_welcome_chars');
-        $user->available_minutes_prepaid = config('settings.whisper_welcome_minutes');
+        $user->available_words = config('settings.free_tier_words');
+        $user->available_images = config('settings.free_tier_images');
+        $user->available_chars = config('settings.voiceover_welcome_chars');
+        $user->available_minutes = config('settings.whisper_welcome_minutes');
         $user->default_voiceover_language = config('settings.voiceover_default_language');
         $user->default_voiceover_voice = config('settings.voiceover_default_voice');
         $user->default_template_language = config('settings.default_language');

@@ -54,7 +54,7 @@
 								</div> 						
 							</div>
 
-							<div class="col-lg-6 col-md-6 col-sm-12">
+							<div class="col-lg-12 col-md-12 col-sm-12">
 								<div class="input-box">
 									<h6>{{ __('Customer Avatar') }}</h6>
 									<div class="input-group file-browser">									
@@ -71,7 +71,7 @@
 								</div>
 							</div>
 
-							<div class="col-lg-12 col-md-12 col-sm-12">							
+							<div class="col-lg-6 col-md-6 col-sm-12">							
 								<div class="input-box">								
 									<h6>{{ __('Rating') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
 									<div class="form-group">							    

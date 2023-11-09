@@ -378,7 +378,7 @@
                                     
                                     <div class="col-lg-9 col-md-8 col-sm-12">
                                     	<div class="p-2 pt-6">
-                                		<h6 class="mb-2 fs-15 number-font ">ChatGPT-4</h6>
+                                		<h6 class="mb-2 fs-15 number-font ">ChatGPT</h6>
                                 			<div class="text-muted description">Ask the world's most powerful chatbot about any topic. Save your chats, export them, or download as you need them.</div>
                                 		</div>
                                     </div>

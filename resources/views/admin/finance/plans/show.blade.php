@@ -10,7 +10,7 @@
 					<li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="fa-solid fa-sack-dollar mr-2 fs-12"></i>{{ __('Admin') }}</a></li>
 					<li class="breadcrumb-item" aria-current="page"><a href="{{ route('admin.finance.dashboard') }}"> {{ __('Finance Management') }}</a></li>
 					<li class="breadcrumb-item" aria-current="page"><a href="{{ route('admin.finance.plans') }}"> {{ __('Subscription Plans') }}</a></li>
-					<li class="breadcrumb-item active" aria-current="page"><a href="{{url('#')}}"> {{ __('Plan') }}</a></li>
+					<li class="breadcrumb-item active" aria-current="page"><a href="{{url('#')}}"> {{ __('Plan Details') }}</a></li>
 				</ol>
 			</ol>
 		</div>

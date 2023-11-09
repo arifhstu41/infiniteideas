@@ -57,11 +57,13 @@ class UserController extends Controller
 
         $user_subscription = ($subscription) ? SubscriptionPlan::where('id', auth()->user()->plan_id)->first() : '';
 
+        $check_api_feature = SubscriptionPlan::where('id', auth()->user()->plan_id)->first();
+
         $progress = [
             'words' => (auth()->user()->total_words > 0) ? ((auth()->user()->available_words / auth()->user()->total_words) * 100) : 0,
         ];
 
-        return view('user.profile.index', compact('chart_data', 'data', 'subscription', 'user_subscription', 'progress'));           
+        return view('user.profile.index', compact('chart_data', 'data', 'subscription', 'user_subscription', 'progress', 'check_api_feature'));           
     }
 
 
@@ -73,9 +75,11 @@ class UserController extends Controller
      */
     public function edit($id = null)
     {   
+        $check_api_feature = SubscriptionPlan::where('id', auth()->user()->plan_id)->first();
+
         $storage['available'] = $this->formatSize(auth()->user()->storage_total * 1000000);
 
-        return view('user.profile.edit', compact('storage'));
+        return view('user.profile.edit', compact('storage', 'check_api_feature'));
     }
 
 
@@ -108,7 +112,9 @@ class UserController extends Controller
 
         $template_languages = Language::orderBy('languages.language', 'asc')->get();
 
-        return view('user.profile.default', compact('languages', 'voices', 'template_languages'));
+        $check_api_feature = SubscriptionPlan::where('id', auth()->user()->plan_id)->first();
+
+        return view('user.profile.default', compact('languages', 'voices', 'template_languages', 'check_api_feature'));
     }
 
 
@@ -197,7 +203,45 @@ class UserController extends Controller
      */
     public function showDelete($id = null)
     {   
-        return view('user.profile.delete');
+        $check_api_feature = SubscriptionPlan::where('id', auth()->user()->plan_id)->first();
+
+        return view('user.profile.delete', compact('check_api_feature'));
+    }
+
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showAPI()
+    {   
+        $check_api_feature = SubscriptionPlan::where('id', auth()->user()->plan_id)->first();
+
+        return view('user.profile.api', compact('check_api_feature'));
+    }
+
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function storeAPI(User $user)
+    {           
+
+        $user->update([
+            'personal_openai_key' => request('openai-key'),
+            'personal_sd_key' => request('sd-key'),
+        ]);
+
+        $user->save();
+
+        toastr()->success(__('Your personal api keys have been saved successfully'));
+        return redirect()->route('user.profile.api');
     }
 
 

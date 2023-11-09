@@ -864,60 +864,6 @@ $('#sub').on('click',function() {
     ssmlText("<sub alias='INCLUDE REPLACEMENT TEXT'>", "</sub>");
 });
 
-
-/*************************************************
- *  Process File Synthesize Mode
- *************************************************/
- $('#synthesize-text').on('click',function(e) {
-
-    "use strict";
-
-    e.preventDefault()
-
-    let map = new Map();
-    let textarea = document.getElementsByTagName("textarea");
-    let full_textarea = textarea.length;
-    let full_text = '';
-
-    if (textarea.length == 1) {
-        let value = document.getElementById('ZZZOOOVVVZ').value;
-        let voice = document.getElementById('ZZZOOOVVVZ').getAttribute('data-voice');
-
-        if (value.length == 0) {
-            Swal.fire('Missing Input Text', 'Enter your text that you want to synthezise before processing', 'warning');
-        } else if (value.length > text_length_limit) { 
-            Swal.fire('Text to Speech Notification', 'Text exceeded allowed length, maximum allowed text length is ' + text_length_limit + ' characters. Please decrease the overall text length.', 'warning'); 
-        } else {
-            map.set(voice, value);
-            startSynthesizeMode(1, map, value);
-        }
-
-    } else {
-
-        for (let i = 0; i < textarea.length; i++) {
-
-            let value = textarea[i].value;
-            let voice = textarea[i].getAttribute('data-voice');
-            let distinct = generateID(3);
-            
-            if (value != '') {
-                map.set(voice +'___'+ distinct, value);
-                full_text +=value;
-            } else {
-                full_textarea--;
-            }
-        }
-
-        if (full_text.length == 0) {
-            Swal.fire('Missing Input Text', 'Enter your text that you want to synthezise before processing', 'warning');
-        } else if (full_text.length > text_length_limit) { 
-            Swal.fire('Text to Speech Notification', 'Text exceeded allowed length, maximum allowed total text length is ' + text_length_limit + ' characters. Please decrease the text length.', 'warning'); 
-        } else {
-            startSynthesizeMode(full_textarea, map, full_text);
-        }    
-    }
-});
-
 function startSynthesizeMode(length, map, all_text) {
 
     let text_object = Object.fromEntries(map);
@@ -926,7 +872,7 @@ function startSynthesizeMode(length, map, all_text) {
     data.push({name: 'length', value: length});
     data.push({name: 'input_text_total', value: all_text});
     data.push({name: 'input_text', value: JSON.stringify(text_object)});
-
+console.log(JSON.stringify(text_object))
     $.ajax({
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -964,59 +910,6 @@ function startSynthesizeMode(length, map, all_text) {
     }).done(function(data) {})
 }
 
-
-/*************************************************
- *  Process Live Synthesize Listen Mode
- *************************************************/
- $('#listen-text').on('click', function(e) {
-
-    "use strict";
-    
-    e.preventDefault()
-
-    let map = new Map();
-    let textarea = document.getElementsByTagName("textarea");
-    let full_textarea = textarea.length;
-    let full_text = '';
-
-    if (textarea.length == 1) {
-        let value = document.getElementById('ZZZOOOVVVZ').value;
-        let voice = document.getElementById('ZZZOOOVVVZ').getAttribute('data-voice');
-
-        if (value.length == 0) {
-            Swal.fire('Missing Input Text', 'Enter your text that you want to synthezise before processing', 'warning');
-        } else if (value.length > text_length_limit) { 
-            Swal.fire('Text to Speech Notification', 'Text exceeded allowed length, maximum allowed text length is ' + text_length_limit + ' characters. Please decrease the text length.', 'warning'); 
-        } else {
-            map.set(voice, value);
-            startListenMode(1, map, value);
-        }
-
-    } else {
-
-        for (let i = 0; i < textarea.length; i++) {
-
-            let value = textarea[i].value;
-            let voice = textarea[i].getAttribute('data-voice');
-            let distinct = generateID(3);
-            
-            if (value != '') {
-                map.set(voice +'___'+ distinct, value);
-                full_text +=value;
-            } else {
-                full_textarea--;
-            }
-        }
-
-        if (full_text.length == 0) {
-            Swal.fire('Missing Input Text', 'Enter your text that you want to synthezise before processing', 'warning');
-        } else if (full_text.length > text_length_limit) { 
-            Swal.fire('Text to Speech Notification', 'Text exceeded allowed length, maximum allowed total text length is ' + text_length_limit + ' characters. Please decrease the overall text length.', 'warning'); 
-        } else {
-            startListenMode(full_textarea, map, full_text);
-        }    
-    }
-});
 
 function startListenMode(length, map, all_text) {
 
@@ -1192,7 +1085,6 @@ $('#addTextRow').on('click', function (e) {
         Swal.fire('Voice Lines Limit Reached', 'You have reached maximum number of lines for text', 'info');
     }
     
-
 }); 
 
 
@@ -1245,40 +1137,6 @@ function generateID(length) {
     }
 
     return result;
-}
-
-
-function deleteRow(row) {
-    let id = row.id;
-
-    if(id != 'ZZZOOOVVVDEL') {
-        id = id.slice(0, -3);
-        $('#' + id).remove();
-        total_rows--;
-        countCharacters();
-
-    } else {
-        let main_img = document.getElementById('ZZZOOOVVVIMG');
-        main_img.setAttribute('src', textarea_img);
-
-        let main_voice = document.getElementById('ZZZOOOVVVZ');
-        main_voice.setAttribute('data-voice', textarea_voice_id);
-
-        let instance = tippy(document.getElementById('ZZZOOOVVVIMG'));
-        instance.setProps({
-            animation: 'scale-extreme',
-            theme: 'material',
-            content: textarea_voice_details,
-        });
-
-        main_voice.value = "";
-        if (total_rows == 1) {
-            $('#total-characters').text('0 characters, 1 line');
-        }
-
-        Swal.fire('Main Text Line', 'Main text line cannot be deleted, line voice will change to the main selected one', 'warning');
-    }
-
 }
 
 
@@ -1366,119 +1224,6 @@ function countCharacters() {
     }
 }
 
-
-/*===========================================================================
-*
-*  Listen Row 
-*
-*============================================================================*/
-function listenRow(row) {
-
-    let id = row.id;
-    id = id.slice(0, -1);
-
-    let text = document.getElementById(id + 'Z');
-    let voice = text.getAttribute('data-voice');
-    let format = document.querySelector('input[name="format"]:checked').value;
-
-    if (text.value == '') {    
-        Swal.fire('Text to Speech Notification', 'Please enter text to synthesize first', 'warning');    
-    } else if (text.value.length > text_length_limit) { 
-        Swal.fire('Text to Speech Notification', 'Text exceeded allowed length, maximum allowed text length is ' + text_length_limit + ' characters. Please decrease the text length.', 'warning'); 
-    } else {
-
-        let selected_text = "";
-        if (window.getSelection) {
-            selected_text = window.getSelection().toString();
-        } else if (document.selection && document.selection.type != "Control") {
-            selected_text = document.selection.createRange().selected_text;
-        }
-
-        $.ajax({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            type: "POST",
-            url: 'text-to-speech/listen-row',
-            data: { row_text:text.value, voice:voice, selected_text:selected_text, format:format, selected_text_length:selected_text.length},
-            beforeSend: function() {
-                $('#' + row.id).html('<i class="fa-solid fa-waveform-lines"></i>');
-                $('#' + row.id).prop('disabled', true);         
-                $('#waveform-box').slideUp('slow')   
-            },
-            complete: function() {
-                $('#' + row.id).prop('disabled', false);
-                $('#' + row.id).html('<i class="fa-solid fa-message-music"></i>');              
-            },
-            success: function(data) {
-                animateValue("balance-number", data['old'], data['current'], 2000);
-                $('#waveform-box').slideDown('slow')
-            },
-            error: function(data) {
-                if (data.responseJSON['error']) {
-                    Swal.fire('Text to Speech Notification', data.responseJSON['error'], 'warning');
-                }
-
-                $('#' + row.id).prop('disabled', false);
-                $('#' + row.id).html('<i class="fa-solid fa-message-music"></i>');    
-                $('#waveform-box').slideUp('slow')            
-            }
-        }).done(function(data) {
-
-            let download = document.getElementById('downloadBtn');
-
-            if (download) {
-                document.getElementById('downloadBtn').href = data['url'];
-            }
-            
-            wavesurfer.load(data['url']);
-
-            wavesurfer.on('ready',     
-                wavesurfer.play.bind(wavesurfer),
-                playBtn.innerHTML = '<i class="fa fa-pause"></i>',
-                playBtn.classList.add('isPlaying'),
-            );
-        })
-    }
-    
-}
-
-
-/*===========================================================================
-*
-*  Read File
-*
-*============================================================================*/
-function readFile() {
-
-    Swal.fire({
-        title: 'Upload File',
-        showCancelButton: true,
-        confirmButtonText: 'Upload',
-        reverseButtons: true,
-        inputLabel: 'Only TXT files up to ' + text_length_limit + ' characters length are supported',
-        input: 'file',
-    }).then((file) => {
-        if (file.value) {
-            let file = $('.swal2-file')[0].files[0];
-            let file_name = file['name'];
-            let extension = file_name.split('.').pop();
-
-            if (extension != 'txt') {
-                Swal.fire('Incorrect File Format', 'Following file format - ' + extension + ' -  is not allowed. Select a txt file.', 'error');
-            } else {
-                let reader = new FileReader()
-                reader.onload = event => processText(event.target.result) 
-                reader.onerror = error => reject(error)
-                reader.readAsText(file)
-            }
-
-        } else if (file.dismiss !== Swal.DismissReason.cancel) {
-            Swal.fire('No File Selected', 'Make sure to select a text file before uploading', 'error');
-        }
-    })
-
-}
 
 function processText(text) {
 

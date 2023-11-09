@@ -128,7 +128,7 @@
 							<div class="col-lg-12 col-md-12 col-sm-12">								
 								<div class="input-box">								
 									<h6>{{ __('Enter Referral Action Phrase') }}</h6>
-									<textarea class="form-control" name="referral_headline" id="referral_headline" rows="2">{{ $referral['referral_headline'] }}</textarea> 
+									<textarea class="form-control" name="referral_headline" id="referral_headline" rows="2">{{ __($referral['referral_headline']) }}</textarea> 
 									@error('referral_headline')
 										<p class="text-danger">{{ $errors->first('referral_headline') }}</p>
 									@enderror
@@ -138,7 +138,7 @@
 							<div class="col-lg-12 col-md-12 col-sm-12">								
 								<div class="input-box">								
 									<h6>{{ __('Enter Step by Step Referral Guidelines') }}</h6>
-									<textarea class="form-control" name="referral_guideline" id="referral_guideline" rows="7">{{ $referral['referral_guideline'] }}</textarea> 
+									<textarea class="form-control" name="referral_guideline" id="referral_guideline" rows="7">{{ __($referral['referral_guideline']) }}</textarea> 
 									@error('referral_guideline')
 										<p class="text-danger">{{ $errors->first('referral_guideline') }}</p>
 									@enderror
@@ -227,6 +227,8 @@
 				colReorder: true,
 				"order": [[ 0, "desc" ]],
 				language: {
+					"emptyTable": "<div><br>{{ __('No referrals yet') }}</div>",
+					"info": "{{ __('Showing page') }} _PAGE_ {{ __('of') }} _PAGES_",
 					search: "<i class='fa fa-search search-icon'></i>",
 					lengthMenu: '_MENU_ ',
 					paginate : {
@@ -293,6 +295,8 @@
 				colReorder: true,
 				"order": [[ 4, "desc" ]],
 				language: {
+					"emptyTable": "<div><br>{{ __('No referrals yet') }}</div>",
+					"info": "{{ __('Showing page') }} _PAGE_ {{ __('of') }} _PAGES_",
 					search: "<i class='fa fa-search search-icon'></i>",
 					lengthMenu: '_MENU_ ',
 					paginate : {

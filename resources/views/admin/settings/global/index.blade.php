@@ -502,7 +502,6 @@
 											<h6>{{ __('Default Group for New Users') }}</h6>
 											<select id="user-group" name="user-group" class="form-select" data-placeholder="{{ __('Select Default New User Group') }}">	
 												<option value="user" {{ (config('settings.default_user') == 'user') ? 'selected' : '' }}>{{ __('User') }}</option>
-												<option value="subscriber" {{ (config('settings.default_user') == 'subscriber') ? 'selected' : '' }}>{{ __('Subscriber') }}</option>
 												<option value="admin" {{ (config('settings.default_user') == 'admin') ? 'selected' : '' }}>{{ __('Administrator') }}</option>																		
 											</select> 
 										</div> 

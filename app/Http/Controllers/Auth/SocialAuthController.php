@@ -56,10 +56,10 @@ class SocialAuthController extends Controller
                 $new_user->status = 'active';
                 $new_user->group = config('settings.default_user');
                 $new_user->email_verified_at = now();
-                $new_user->available_words_prepaid = config('settings.free_tier_words');
-                $new_user->available_images_prepaid = config('settings.free_tier_images');
-                $new_user->available_chars_prepaid = config('settings.voiceover_welcome_chars');
-                $new_user->available_minutes_prepaid = config('settings.whisper_welcome_minutes');
+                $new_user->available_words = config('settings.free_tier_words');
+                $new_user->available_images = config('settings.free_tier_images');
+                $new_user->available_chars = config('settings.voiceover_welcome_chars');
+                $new_user->available_minutes = config('settings.whisper_welcome_minutes');
                 $new_user->default_voiceover_language = config('settings.voiceover_default_language');
                 $new_user->default_voiceover_voice = config('settings.voiceover_default_voice');
                 $new_user->default_template_language = config('settings.default_language');

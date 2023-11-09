@@ -375,6 +375,10 @@
 												<img alt="Paddle Gateway" class="w-60" src="<?php echo e(URL::asset('img/payments/paddle.svg')); ?>">
 											<?php elseif($data->gateway == 'Yookassa'): ?>
 												<img alt="Yookassa Gateway" class="w-60" src="<?php echo e(URL::asset('img/payments/yookassa.svg')); ?>">
+											<?php elseif($data->gateway == 'Iyzico'): ?>
+												<img alt="Iyzico Gateway" class="w-60" src="<?php echo e(URL::asset('img/payments/iyzico.svg')); ?>">
+											<?php elseif($data->gateway == 'TwoCheckout'): ?>
+												<img alt="TwoCheckout Gateway" class="w-60" src="<?php echo e(URL::asset('img/payments/twocheckout.svg')); ?>">
 											<?php else: ?>
 												<span class="font-weight-bold fs-12"><?php echo e(__('Free')); ?></span>
 										<?php endif; ?>
@@ -526,7 +530,7 @@
 			new Chart(ctx, {
 				type: 'bar',
 				data: {
-					labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+					labels: ['<?php echo e(__('Jan')); ?>', '<?php echo e(__('Feb')); ?>', '<?php echo e(__('Mar')); ?>', '<?php echo e(__('Apr')); ?>', '<?php echo e(__('May')); ?>', '<?php echo e(__('Jun')); ?>', '<?php echo e(__('Jul')); ?>', '<?php echo e(__('Aug')); ?>', '<?php echo e(__('Sep')); ?>', '<?php echo e(__('Oct')); ?>', '<?php echo e(__('Nov')); ?>', '<?php echo e(__('Dec')); ?>'],
 					datasets: [{
 						label: '<?php echo e(__('Total New Registered Users')); ?> ',
 						data: userYearlyDataset,
@@ -619,7 +623,7 @@
 			new Chart(ctx, {
 				type: 'bar',
 				data: {
-					labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+					labels: ['<?php echo e(__('Jan')); ?>', '<?php echo e(__('Feb')); ?>', '<?php echo e(__('Mar')); ?>', '<?php echo e(__('Apr')); ?>', '<?php echo e(__('May')); ?>', '<?php echo e(__('Jun')); ?>', '<?php echo e(__('Jul')); ?>', '<?php echo e(__('Aug')); ?>', '<?php echo e(__('Sep')); ?>', '<?php echo e(__('Oct')); ?>', '<?php echo e(__('Nov')); ?>', '<?php echo e(__('Dec')); ?>'],
 					datasets: [{
 						label: '<?php echo e(__('Total Income')); ?> (<?php echo e(config('payment.default_system_currency')); ?>) ',
 						data: incomeDataset,

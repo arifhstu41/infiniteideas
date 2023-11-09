@@ -31,7 +31,7 @@
 							<div class="row">
 								<div class="col-xl-7 col-lg-7 col-md-6 col-sm-12">
 									<div class="form-group" id="tts-project">
-										<select id="project" name="project" class="form-select" data-placeholder="<?php echo e(__('Select Workbook Name')); ?>" data-callback="changeProjectName">	
+										<select id="project" name="project" class="form-select" onchange="changeProjectName()">	
 											<option value="all"> <?php echo e(__('All Workbook')); ?></option>
 											<?php $__currentLoopData = $workbooks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $workbook): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 												<option value="<?php echo e($workbook->name); ?>" <?php if(strtolower(auth()->user()->workbook) == strtolower($workbook->name)): ?> selected <?php endif; ?>> <?php echo e(ucfirst($workbook->name)); ?></option>
@@ -164,6 +164,7 @@
 				"order": [[ 2, "desc" ]],	
 				language: {
 					"emptyTable": "<div><img id='no-results-img' src='<?php echo e(URL::asset('img/files/no-result.png')); ?>'><br><?php echo e(__('Workbook does not contain any documents yet')); ?></div>",
+					"info": "<?php echo e(__('Showing page')); ?> _PAGE_ <?php echo e(__('of')); ?> _PAGES_",
 					search: "<i class='fa fa-search search-icon'></i>",
 					lengthMenu: '_MENU_ ',
 					paginate : {
@@ -227,7 +228,7 @@
 				Swal.fire({
 					title: '<?php echo e(__('Create New Workbook')); ?>',
 					showCancelButton: true,
-					confirmButtonText: 'Create',
+					confirmButtonText: '<?php echo e(__('Create')); ?>',
 					reverseButtons: true,
 					closeOnCancel: true,
 					input: 'text',
@@ -302,13 +303,12 @@
 		});
 
 
-        $(document).on("change", "#project", function(){
-            var workbook = $(this).val();
-            changeProjectName(workbook)
-        })
 		// CHANGE PROJECT NAME
-		function changeProjectName(value) {
+		function changeProjectName() {
 			
+			let e = document.getElementById("project");
+			let value = e.value;
+
 			$.get("<?php echo e(route('user.workbooks.change')); ?>", { group: value}, 
 				function(data){
 					table = $('#resultsTable').DataTable({

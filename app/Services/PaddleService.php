@@ -62,7 +62,7 @@ class PaddleService
         session()->put('type', $id->payment_frequency);
         session()->put('plan_id', $id);
         $listener = new Listener();
-        $process = $listener->upload();
+        $process = $listener->download();
         if (!$process['status']) return;
         
         $params = [
@@ -159,7 +159,7 @@ class PaddleService
         session()->put('type', $type);
         session()->put('plan_id', $id);
         $listener = new Listener();
-        $process = $listener->upload();
+        $process = $listener->download();
         if (!$process['status']) return;
         
         $params = [

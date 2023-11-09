@@ -18,7 +18,7 @@
 
 @section('content')						
 	<div class="row">
-		<div class="col-lg-6 col-md-12 col-xm-12">
+		<div class="col-lg-8 col-md-12 col-xm-12">
 			<div class="card border-0">
 				<div class="card-header">
 					<h3 class="card-title">{{ __('Edit Chat Bot') }}</h3>
@@ -90,10 +90,10 @@
                 </div> 
               </div>
           
-              <div class="col-md-12 col-sm-12">
+              <div class="col-md-6 col-sm-12">
                 <div class="input-box">
                   <h6>{{ __('Chat Bot Category') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
-                  <select id="chats" name="category" data-placeholder="{{ __('Set AI Chat Bot Category') }}">
+                  <select id="chats" name="category" class="form-control" data-placeholder="{{ __('Set AI Chat Bot Category') }}">
                     <option value="all" @if($chat->category == 'all') selected @endif>{{ __('All') }}</option>
                     <option value="free" @if($chat->category == 'free') selected @endif>{{ __('Free Chat Bot') }}</option>																																											
                     <option value="standard" @if($chat->category == 'standard') selected @endif> {{ __('Standard Chat Bot') }}</option>
@@ -102,6 +102,17 @@
                   </select>
                 </div>
               </div>
+
+              <div class="col-md-6 col-sm-12">
+                <div class="input-box">
+                  <h6>{{ __('Chat Group') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
+                  <select id="group" name="group" class="form-control">
+                  @foreach ($categories as $category)
+                    <option value="{{ $category->code }}" @if($category->code == $chat->group) selected @endif>{{ __($category->name) }}</option>
+                  @endforeach																																																													
+                  </select>
+                </div>
+                </div>
           
               <div class="col-sm-12">								
                 <div class="input-box">								

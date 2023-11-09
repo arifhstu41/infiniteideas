@@ -37,7 +37,7 @@ class ReferralSystemController extends Controller
                         return $actionBtn;
                     })
                     ->addColumn('created-on', function($row){
-                        $created_on = '<span>'.date_format($row["created_at"], 'd M Y, H:i:s').'</span>';
+                        $created_on = '<span>'.date_format($row["created_at"], 'd/m/Y, H:i:s').'</span>';
                         return $created_on;
                     })
                     ->addColumn('custom-payment', function($row){

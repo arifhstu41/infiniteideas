@@ -44,6 +44,7 @@
 											<th width="8%">{{ __('Name') }}</th> 											
 											<th width="8%">{{ __('Character') }}</th>
 											<th width="3%">{{ __('Package') }}</th>						
+											<th width="3%">{{ __('Group') }}</th>						
 											<th width="3%">{{ __('Updated On') }}</th>	    										 						           	
 											<th width="4%">{{ __('Actions') }}</th>
 										</tr>
@@ -75,6 +76,7 @@
 				colReorder: true,
 				language: {
 					search: "<i class='fa fa-search search-icon'></i>",
+					"info": "{{ __('Showing page') }} _PAGE_ {{ __('of') }} _PAGES_",
 					lengthMenu: '_MENU_ ',
 					paginate : {
 						first    : '<i class="fa fa-angle-double-left"></i>',
@@ -117,7 +119,13 @@
 						name: 'custom-package',
 						orderable: true,
 						searchable: true
-					},						
+					},		
+					{
+						data: 'custom-group',
+						name: 'custom-group',
+						orderable: true,
+						searchable: true
+					},					
 					{
 						data: 'created-on',
 						name: 'created-on',

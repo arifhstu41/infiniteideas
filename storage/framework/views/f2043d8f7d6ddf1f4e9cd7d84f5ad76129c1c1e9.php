@@ -14,7 +14,7 @@
 			<div class="card border-0">
 				<div class="card-header pt-4 border-0" id="voiceover-character-counter-top">
 					<h3 class="card-title"><i class="fa-sharp fa-solid fa-waveform-lines mr-4 text-info"></i><?php echo e(__('AI Voiceover Studio')); ?> </h3>
-					<span class="fs-11 text-muted pl-3" id="voiceover-character-counter"><i class="fa-sharp fa-solid fa-bolt-lightning mr-2 text-primary"></i><?php echo e(__('Your Balance is')); ?> <span class="font-weight-semibold" id="balance-number"><?php echo e(number_format(auth()->user()->available_chars + auth()->user()->available_chars_prepaid)); ?></span> <?php echo e(__('Characters')); ?></span>
+					<span class="fs-11 text-muted pl-3" id="voiceover-character-counter"><i class="fa-sharp fa-solid fa-bolt-lightning mr-2 text-primary"></i><?php echo e(__('Your Balance is')); ?> <span class="font-weight-semibold" id="balance-number"><?php if(auth()->user()->available_chars == -1): ?> <?php echo e(__('Unlimited')); ?> <?php else: ?> <?php echo e(number_format(auth()->user()->available_chars + auth()->user()->available_chars_prepaid)); ?> <?php echo e(__('Characters')); ?> <?php endif; ?></span></span>
 				</div>
 				<div class="card-body pt-2 pl-7 pr-7 pb-4" id="tts-body-minify">
 				
@@ -367,7 +367,7 @@
 							<div class="card-footer border-0 text-center mt-3">
 								<span id="processing"><img src="<?php echo e(URL::asset('/img/svgs/processing.svg')); ?>" alt=""></span>
 								<button type="button" class="btn btn-primary main-action-button mr-2" id="listen-text"><?php echo e(__('Listen')); ?></button>
-								<button type="submit" class="btn btn-primary main-action-button" id="synthesize-text"><?php echo e(__('Synthesize')); ?></button>								
+								<button type="button" class="btn btn-primary main-action-button" id="synthesize-text"><?php echo e(__('Synthesize')); ?></button>								
 							</div>							
 
 						</form>
@@ -463,6 +463,7 @@
 				colReorder: true,
 				language: {
 					"emptyTable": "<div><img id='no-results-img' src='<?php echo e(URL::asset('img/files/no-result.png')); ?>'><br><?php echo e(__('No synthesized text results yet')); ?></div>",
+					"info": "<?php echo e(__('Showing page')); ?> _PAGE_ <?php echo e(__('of')); ?> _PAGES_",
 					search: "<i class='fa fa-search search-icon'></i>",
 					lengthMenu: '_MENU_ ',
 					paginate : {
@@ -569,7 +570,10 @@
 
 
 			let user_voice = "<?php echo e(auth()->user()->default_voiceover_voice); ?>";
-			voice_select(user_voice);
+			if (user_voice) {
+				voice_select(user_voice);
+			}
+			
 
 
 			// DELETE SYNTHESIZE RESULT
@@ -611,7 +615,226 @@
 				})
 			});
 
-		});		
+
+			/*************************************************
+			 *  Process File Synthesize Mode
+			 *************************************************/
+			$('#synthesize-text').on('click',function(e) {
+
+				"use strict";
+
+				e.preventDefault()
+
+				let map = new Map();
+				let textarea = document.getElementsByTagName("textarea");
+				let full_textarea = textarea.length;
+				let full_text = '';
+
+				if (textarea.length == 1) {
+					let value = document.getElementById('ZZZOOOVVVZ').value;
+					let voice = document.getElementById('ZZZOOOVVVZ').getAttribute('data-voice');
+
+					if (value.length == 0) {
+						Swal.fire('<?php echo e(__('Missing Input Text')); ?>', '<?php echo e(__('Enter your text that you want to synthezise before processing')); ?>', 'warning');
+					} else if (value.length > text_length_limit) { 
+						Swal.fire('<?php echo e(__('Text to Speech Notification')); ?>', '<?php echo e(__('Text exceeded allowed length, maximum allowed text length is ')); ?>' + text_length_limit + '<?php echo e(__(' characters. Please decrease the overall text length.')); ?>', 'warning'); 
+					} else {
+						map.set(voice, value);
+						startSynthesizeMode(1, map, value);
+					}
+
+				} else {
+
+					for (let i = 0; i < textarea.length; i++) {
+
+						let value = textarea[i].value;
+						let voice = textarea[i].getAttribute('data-voice');
+						let distinct = generateID(3);
+						
+						if (value != '') {
+							map.set(voice +'___'+ distinct, value);
+							full_text +=value;
+						} else {
+							full_textarea--;
+						}
+					}
+
+					if (full_text.length == 0) {
+						Swal.fire('<?php echo e(__('Missing Input Text')); ?>', '<?php echo e(__('Enter your text that you want to synthezise before processing')); ?>', 'warning');
+					} else if (full_text.length > text_length_limit) { 
+						Swal.fire('<?php echo e(__('Text to Speech Notification')); ?>', '<?php echo e(__('Text exceeded allowed length, maximum allowed total text length is ')); ?>' + text_length_limit + '<?php echo e(__(' characters. Please decrease the text length.')); ?>', 'warning'); 
+					} else {
+						startSynthesizeMode(full_textarea, map, full_text);
+					}    
+				}
+			});
+
+
+			/*************************************************
+			 *  Process Live Synthesize Listen Mode
+			 *************************************************/
+			$('#listen-text').on('click', function(e) {
+
+				"use strict";
+
+				e.preventDefault()
+
+				let map = new Map();
+				let textarea = document.getElementsByTagName("textarea");
+				let full_textarea = textarea.length;
+				let full_text = '';
+
+				if (textarea.length == 1) {
+					let value = document.getElementById('ZZZOOOVVVZ').value;
+					let voice = document.getElementById('ZZZOOOVVVZ').getAttribute('data-voice');
+
+					if (value.length == 0) {
+						Swal.fire('<?php echo e(__('Missing Input Text')); ?>', '<?php echo e(__('Enter your text that you want to synthezise before processing')); ?>', 'warning');
+					} else if (value.length > text_length_limit) { 
+						Swal.fire('<?php echo e(__('Text to Speech Notification')); ?>', '<?php echo e(__('Text exceeded allowed length, maximum allowed text length is ')); ?>' + text_length_limit + '<?php echo e(__(' characters. Please decrease the text length.')); ?>', 'warning'); 
+					} else {
+						map.set(voice, value);
+						startListenMode(1, map, value);
+					}
+
+				} else {
+
+					for (let i = 0; i < textarea.length; i++) {
+
+						let value = textarea[i].value;
+						let voice = textarea[i].getAttribute('data-voice');
+						let distinct = generateID(3);
+						
+						if (value != '') {
+							map.set(voice +'___'+ distinct, value);
+							full_text +=value;
+						} else {
+							full_textarea--;
+						}
+					}
+
+					if (full_text.length == 0) {
+						Swal.fire('<?php echo e(__('Missing Input Text')); ?>', '<?php echo e(__('Enter your text that you want to synthezise before processing')); ?>', 'warning');
+					} else if (full_text.length > text_length_limit) { 
+						Swal.fire('<?php echo e(__('Text to Speech Notification')); ?>', '<?php echo e(__('Text exceeded allowed length, maximum allowed total text length is ')); ?>' + text_length_limit + '<?php echo e(__(' characters. Please decrease the overall text length.')); ?>', 'warning'); 
+					} else {
+						startListenMode(full_textarea, map, full_text);
+					}    
+				}
+			});
+
+
+		});	
+		
+		
+		/*===========================================================================
+		*
+		*  Listen Row 
+		*
+		*============================================================================*/
+		function listenRow(row) {
+
+			let id = row.id;
+			id = id.slice(0, -1);
+
+			let text = document.getElementById(id + 'Z');
+			let voice = text.getAttribute('data-voice');
+			let format = document.querySelector('input[name="format"]:checked').value;
+
+			if (text.value == '') {    
+				Swal.fire('<?php echo e(__('Text to Speech Notification')); ?>', '<?php echo e(__('Please enter text to synthesize first')); ?>', 'warning');    
+			} else if (text.value.length > text_length_limit) { 
+				Swal.fire('<?php echo e(__('Text to Speech Notification')); ?>', '<?php echo e(__('Text exceeded allowed length, maximum allowed text length is ')); ?>' + text_length_limit + '<?php echo e(__(' characters. Please decrease the text length.')); ?>', 'warning'); 
+			} else {
+
+				let selected_text = "";
+				if (window.getSelection) {
+					selected_text = window.getSelection().toString();
+				} else if (document.selection && document.selection.type != "Control") {
+					selected_text = document.selection.createRange().selected_text;
+				}
+
+				$.ajax({
+					headers: {
+						'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+					},
+					type: "POST",
+					url: 'text-to-speech/listen-row',
+					data: { row_text:text.value, voice:voice, selected_text:selected_text, format:format, selected_text_length:selected_text.length},
+					beforeSend: function() {
+						$('#' + row.id).html('<i class="fa-solid fa-waveform-lines"></i>');
+						$('#' + row.id).prop('disabled', true);         
+						$('#waveform-box').slideUp('slow')   
+					},
+					complete: function() {
+						$('#' + row.id).prop('disabled', false);
+						$('#' + row.id).html('<i class="fa-solid fa-message-music"></i>');              
+					},
+					success: function(data) {
+						animateValue("balance-number", data['old'], data['current'], 2000);
+						$('#waveform-box').slideDown('slow')
+					},
+					error: function(data) {
+						if (data.responseJSON['error']) {
+							Swal.fire('<?php echo e(__('Text to Speech Notification')); ?>', data.responseJSON['error'], 'warning');
+						}
+
+						$('#' + row.id).prop('disabled', false);
+						$('#' + row.id).html('<i class="fa-solid fa-message-music"></i>');    
+						$('#waveform-box').slideUp('slow')            
+					}
+				}).done(function(data) {
+
+					let download = document.getElementById('downloadBtn');
+
+					if (download) {
+						document.getElementById('downloadBtn').href = data['url'];
+					}
+					
+					wavesurfer.load(data['url']);
+
+					wavesurfer.on('ready',     
+						wavesurfer.play.bind(wavesurfer),
+						playBtn.innerHTML = '<i class="fa fa-pause"></i>',
+						playBtn.classList.add('isPlaying'),
+					);
+				})
+			}
+
+		}
+
+
+		function deleteRow(row) {
+			let id = row.id;
+
+			if(id != 'ZZZOOOVVVDEL') {
+				id = id.slice(0, -3);
+				$('#' + id).remove();
+				total_rows--;
+				countCharacters();
+
+			} else {
+				let main_img = document.getElementById('ZZZOOOVVVIMG');
+				main_img.setAttribute('src', textarea_img);
+
+				let main_voice = document.getElementById('ZZZOOOVVVZ');
+				main_voice.setAttribute('data-voice', textarea_voice_id);
+
+				let instance = tippy(document.getElementById('ZZZOOOVVVIMG'));
+				instance.setProps({
+					animation: 'scale-extreme',
+					theme: 'material',
+					content: textarea_voice_details,
+				});
+
+				main_voice.value = "";
+				if (total_rows == 1) {
+					$('#total-characters').text('0 characters, 1 line');
+				}
+
+				Swal.fire('<?php echo e(__('Main Text Line')); ?>', '<?php echo e(__('Main text line cannot be deleted, line voice will change to the main selected one')); ?>', 'warning');
+			}
+		}
 	</script>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/infiniteideas/public_html/app.infiniteideas.ai/resources/views/user/voiceover/index.blade.php ENDPATH**/ ?>

@@ -191,10 +191,18 @@
 									</div>
 
 									<div class="col-lg-6 col-md-6 col-sm-12">
+										<div class="input-box">	
+											<h6>{{ __('Team Members Quantity') }} <span class="text-muted">({{ __('For User Group') }})</span> <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
+											<input type="number" class="form-control @error('team-members-quantity') is-danger @enderror" id="team-members-quantity" name="team-members-quantity" placeholder="Ex: 5" value="{{ config('settings.team_members_quantity_user') }}">
+										</div> 						
+									</div>
+
+									<div class="col-lg-6 col-md-6 col-sm-12">
 										<div class="input-box">								
 											<h6>{{ __('Number of Words as a Gift upon Registration') }} <span class="text-muted">({{ __('One Time') }})<span class="text-required"><i class="fa-solid fa-asterisk"></i></span> </span></h6>
 											<div class="form-group">							    
 												<input type="number" class="form-control @error('free-tier-words') is-danger @enderror" id="free-tier-words" name="free-tier-words" placeholder="Ex: 1000" value="{{ config('settings.free_tier_words') }}" required>
+												<span class="text-muted fs-10">{{ __('Set as -1 for unlimited words') }}.</span>
 												@error('free-tier-words')
 													<p class="text-danger">{{ $errors->first('free-tier-words') }}</p>
 												@enderror
@@ -207,6 +215,7 @@
 											<h6>{{ __('Number of Images as a Gift upon Registration') }} <span class="text-muted">({{ __('One Time') }})<span class="text-required"><i class="fa-solid fa-asterisk"></i></span> </span></h6>
 											<div class="form-group">							    
 												<input type="number" class="form-control @error('free-tier-images') is-danger @enderror" id="free-tier-images" name="free-tier-images" placeholder="Ex: 1000" value="{{ config('settings.free_tier_images') }}" required>
+												<span class="text-muted fs-10">{{ __('Set as -1 for unlimited images') }}.</span>
 												@error('free-tier-images')
 													<p class="text-danger">{{ $errors->first('free-tier-images') }}</p>
 												@enderror
@@ -219,6 +228,7 @@
 											<h6>{{ __('Number of Characters for AI Voiceover as a Gift upon Registration') }} <span class="text-muted">({{ __('One Time') }})<span class="text-required"><i class="fa-solid fa-asterisk"></i></span> </span></h6>
 											<div class="form-group">							    
 												<input type="number" class="form-control @error('set-free-chars') is-danger @enderror" id="set-free-chars" name="set-free-chars" placeholder="Ex: 1000" value="{{ config('settings.voiceover_welcome_chars') }}" required>
+												<span class="text-muted fs-10">{{ __('Set as -1 for unlimited characters') }}.</span>
 												@error('set-free-chars')
 													<p class="text-danger">{{ $errors->first('set-free-chars') }}</p>
 												@enderror
@@ -231,11 +241,32 @@
 											<h6>{{ __('Number of Minutes for AI Speech to Text as a Gift upon Registration') }} <span class="text-muted">({{ __('One Time') }})<span class="text-required"><i class="fa-solid fa-asterisk"></i></span> </span></h6>
 											<div class="form-group">							    
 												<input type="number" class="form-control @error('set-free-minutes') is-danger @enderror" id="set-free-minutes" name="set-free-minutes" placeholder="Ex: 1000" value="{{ config('settings.whisper_welcome_minutes') }}" required>
+												<span class="text-muted fs-10">{{ __('Set as -1 for unlimited minutes') }}.</span>
 												@error('set-free-minutes')
 													<p class="text-danger">{{ $errors->first('set-free-minutes') }}</p>
 												@enderror
 											</div> 
 										</div>							
+									</div>
+
+									<div class="col-lg-6 col-md-6 col-sm-12">
+										<div class="input-box">
+											<h6>{{ __('Personal OpenAI API Key') }} <span class="text-muted">({{ __('For User Group') }})</span> <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
+											<select id="personal-openai-api" name="personal-openai-api" class="form-select">
+												<option value="allow" @if (config('settings.personal_openai_api') == 'allow') selected @endif>{{ __('Allow') }}</option>
+												<option value="deny" @if (config('settings.personal_openai_api') == 'deny') selected @endif>{{ __('Deny') }}</option>																																																																																																								
+											</select>
+										</div>
+									</div>
+		
+									<div class="col-lg-6 col-md-6 col-sm-12">
+										<div class="input-box">
+											<h6>{{ __('Personal Stable Diffusion API Key') }} <span class="text-muted">({{ __('For User Group') }})</span> <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
+											<select id="personal-sd-api" name="personal-sd-api" class="form-select">
+												<option value="allow" @if (config('settings.personal_sd_api') == 'allow') selected @endif>{{ __('Allow') }}</option>
+												<option value="deny" @if (config('settings.personal_sd_api') == 'deny') selected @endif>{{ __('Deny') }}</option>																																																																																																								
+											</select>
+										</div>
 									</div>
 
 									<div class="col-lg-6 col-md-6 col-sm-12">
@@ -246,13 +277,6 @@
 												<p class="text-danger">{{ $errors->first('max-results-user') }}</p>
 											@enderror
 										</div>								
-									</div>
-
-									<div class="col-lg-6 col-md-6 col-sm-12">
-										<div class="input-box">	
-											<h6>{{ __('Team Members Quantity') }} <span class="text-muted">({{ __('For User Group') }})</span> <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
-											<input type="number" class="form-control @error('team-members-quantity') is-danger @enderror" id="team-members-quantity" name="team-members-quantity" placeholder="Ex: 5" value="{{ config('settings.team_members_quantity_user') }}">
-										</div> 						
 									</div>
 									
 								</div>	

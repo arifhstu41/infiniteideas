@@ -205,6 +205,20 @@ unset($__errorArgs, $__bag); ?>
 									</div>
 
 									<div class="col-lg-6 col-md-6 col-sm-12">
+										<div class="input-box">	
+											<h6><?php echo e(__('Team Members Quantity')); ?> <span class="text-muted">(<?php echo e(__('For User Group')); ?>)</span> <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
+											<input type="number" class="form-control <?php $__errorArgs = ['team-members-quantity'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-danger <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="team-members-quantity" name="team-members-quantity" placeholder="Ex: 5" value="<?php echo e(config('settings.team_members_quantity_user')); ?>">
+										</div> 						
+									</div>
+
+									<div class="col-lg-6 col-md-6 col-sm-12">
 										<div class="input-box">								
 											<h6><?php echo e(__('Number of Words as a Gift upon Registration')); ?> <span class="text-muted">(<?php echo e(__('One Time')); ?>)<span class="text-required"><i class="fa-solid fa-asterisk"></i></span> </span></h6>
 											<div class="form-group">							    
@@ -216,6 +230,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-danger <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" id="free-tier-words" name="free-tier-words" placeholder="Ex: 1000" value="<?php echo e(config('settings.free_tier_words')); ?>" required>
+												<span class="text-muted fs-10"><?php echo e(__('Set as -1 for unlimited words')); ?>.</span>
 												<?php $__errorArgs = ['free-tier-words'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -242,6 +257,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-danger <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" id="free-tier-images" name="free-tier-images" placeholder="Ex: 1000" value="<?php echo e(config('settings.free_tier_images')); ?>" required>
+												<span class="text-muted fs-10"><?php echo e(__('Set as -1 for unlimited images')); ?>.</span>
 												<?php $__errorArgs = ['free-tier-images'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -268,6 +284,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-danger <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" id="set-free-chars" name="set-free-chars" placeholder="Ex: 1000" value="<?php echo e(config('settings.voiceover_welcome_chars')); ?>" required>
+												<span class="text-muted fs-10"><?php echo e(__('Set as -1 for unlimited characters')); ?>.</span>
 												<?php $__errorArgs = ['set-free-chars'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -294,6 +311,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-danger <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" id="set-free-minutes" name="set-free-minutes" placeholder="Ex: 1000" value="<?php echo e(config('settings.whisper_welcome_minutes')); ?>" required>
+												<span class="text-muted fs-10"><?php echo e(__('Set as -1 for unlimited minutes')); ?>.</span>
 												<?php $__errorArgs = ['set-free-minutes'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -306,6 +324,26 @@ endif;
 unset($__errorArgs, $__bag); ?>
 											</div> 
 										</div>							
+									</div>
+
+									<div class="col-lg-6 col-md-6 col-sm-12">
+										<div class="input-box">
+											<h6><?php echo e(__('Personal OpenAI API Key')); ?> <span class="text-muted">(<?php echo e(__('For User Group')); ?>)</span> <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
+											<select id="personal-openai-api" name="personal-openai-api" class="form-select">
+												<option value="allow" <?php if(config('settings.personal_openai_api') == 'allow'): ?> selected <?php endif; ?>><?php echo e(__('Allow')); ?></option>
+												<option value="deny" <?php if(config('settings.personal_openai_api') == 'deny'): ?> selected <?php endif; ?>><?php echo e(__('Deny')); ?></option>																																																																																																								
+											</select>
+										</div>
+									</div>
+		
+									<div class="col-lg-6 col-md-6 col-sm-12">
+										<div class="input-box">
+											<h6><?php echo e(__('Personal Stable Diffusion API Key')); ?> <span class="text-muted">(<?php echo e(__('For User Group')); ?>)</span> <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
+											<select id="personal-sd-api" name="personal-sd-api" class="form-select">
+												<option value="allow" <?php if(config('settings.personal_sd_api') == 'allow'): ?> selected <?php endif; ?>><?php echo e(__('Allow')); ?></option>
+												<option value="deny" <?php if(config('settings.personal_sd_api') == 'deny'): ?> selected <?php endif; ?>><?php echo e(__('Deny')); ?></option>																																																																																																								
+											</select>
+										</div>
 									</div>
 
 									<div class="col-lg-6 col-md-6 col-sm-12">
@@ -330,20 +368,6 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
 										</div>								
-									</div>
-
-									<div class="col-lg-6 col-md-6 col-sm-12">
-										<div class="input-box">	
-											<h6><?php echo e(__('Team Members Quantity')); ?> <span class="text-muted">(<?php echo e(__('For User Group')); ?>)</span> <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
-											<input type="number" class="form-control <?php $__errorArgs = ['team-members-quantity'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> is-danger <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>" id="team-members-quantity" name="team-members-quantity" placeholder="Ex: 5" value="<?php echo e(config('settings.team_members_quantity_user')); ?>">
-										</div> 						
 									</div>
 									
 								</div>	

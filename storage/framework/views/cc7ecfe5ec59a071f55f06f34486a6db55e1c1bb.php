@@ -15,7 +15,7 @@
 				<h6 class="text-muted mb-7"><?php echo e(__('Unleash your creativity with our AI image generator that produces stunning visuals in seconds')); ?></h6>
 				<div class="card-top d-flex text-right justify-content-right right mx-auto">
 					<div class="mr-4">
-						<p class="fs-11 text-muted pl-3"><i class="fa-sharp fa-solid fa-bolt-lightning mr-2 text-primary"></i><?php echo e(__('Your Balance is')); ?> <span class="font-weight-semibold" id="balance-number"><?php echo e(number_format(auth()->user()->available_images + auth()->user()->available_images_prepaid)); ?></span> <?php echo e(__('Images')); ?></p>
+						<p class="fs-11 text-muted pl-3"><i class="fa-sharp fa-solid fa-bolt-lightning mr-2 text-primary"></i><?php echo e(__('Your Balance is')); ?> <span class="font-weight-semibold" id="balance-number"><?php if(auth()->user()->available_images == -1): ?> <?php echo e(__('Unlimited')); ?> <?php else: ?> <?php echo e(number_format(auth()->user()->available_images + auth()->user()->available_images_prepaid)); ?> <?php echo e(__('Images')); ?><?php endif; ?></span></p>
 					</div>
 					<div>
 						<a href="#" id="main-settings-toggle"><i class="fa-sharp fa-solid fa-sliders text-muted"></i></a>
@@ -129,7 +129,7 @@
 				<h6 class="fs-11 mb-2 font-weight-semibold"><?php echo e(__('Image Resolution')); ?> <i class="ml-1 text-dark fs-12 fa-solid fa-circle-info" data-tippy-content="<?php echo e(__('The image resolution of the generated images')); ?>"></i></h6>
 				<?php if(config('settings.image_vendor') == 'openai' || config('settings.image_vendor') == 'both'): ?>
 					<select id="resolution" name="resolution" class="form-select openai-feature">					
-						<option value='256x256' >256 x 256px</option>
+						<option value='256x256'>256 x 256px</option>
 						<option value='512x512'>512 x 512px</option>																															
 						<option value='1024x1024' selected>1024 x 1024px</option>																																																																
 					</select>
@@ -861,7 +861,7 @@
 					<h6><?php echo e(__('Image View')); ?></h6>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
-				<div class="modal-body">
+				<div class="modal-body pb-6 pr-5 pl-5">
 					
 				</div>
 			</div>
@@ -1092,19 +1092,11 @@
 					$('#image-generate').html('<i class="fa-sharp fa-solid fa-wand-magic-sparkles mr-2"></i><?php echo e(__("Generate")); ?>');            
 				},
 				success: function (data) {		
-					
+						
 					if (data['status'] == 'success') {		
 						let images = data['images'];
-						var imageContainer = $('.image-container');
-    
 						for (let i in images) {
-							
-							if (imageContainer.length === 0) {
-                                alert("Class 'image-container' not found.");
-                                $("#image-side-space").children().eq(1).prepend(images[i]).show().fadeIn("slow");
-                            }else{
-                                $(".image-container:first").before(images[i]).show().fadeIn("slow");
-                            }
+							$(".image-container:first").before(images[i]).show().fadeIn("slow");
 						}
 						toastr.success('<?php echo e(__('Images were generated successfully')); ?>');		
 						animateValue("balance-number", data['old'], data['current'], 2000);	
@@ -1145,7 +1137,6 @@
 						processData: false,
 						contentType: false,
 						success: function (data) {
-						    
 							if (data['status'] == 'success') {
 								toastr.success('<?php echo e(__('Selected image has been successfully deleted')); ?>');	
 								location.replace(location.href);								

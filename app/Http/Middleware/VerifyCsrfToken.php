@@ -8,12 +8,12 @@ class VerifyCsrfToken extends Middleware
 {
     /**
      * The URIs that should be excluded from CSRF verification.
-     *
-     * @var array<int, string>
      */
     protected $except = [ 
         'webhooks/*',
+        'user/payments/approved/*',
         'user/payments/approved/razorpay',        
+        'user/payments/approved/iyzico',        
         'user/payments/subscription/razorpay',  
         'user/payments/approved/braintree', 
         'public/install/*',    

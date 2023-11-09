@@ -18,7 +18,7 @@
 
 @section('content')						
 	<div class="row">
-		<div class="col-lg-6 col-md-12 col-xm-12">
+		<div class="col-lg-8 col-md-12 col-xm-12">
 			<div class="card border-0">
 				<div class="card-header">
 					<h3 class="card-title">{{ __('Create New Chat Bot') }}</h3>
@@ -83,15 +83,26 @@
 							</div> 
 						  </div>
 					  
-						  <div class="col-md-12 col-sm-12">
+						  <div class="col-md-6 col-sm-12">
 							<div class="input-box">
 							  <h6>{{ __('Chat Bot Category') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
-							  <select id="chats" name="category" data-placeholder="{{ __('Set AI Chat Bot Category') }}">
+							  <select id="chats" name="category" class="form-control">
 								<option value="all">{{ __('All') }}</option>
 								<option value="free" >{{ __('Free Chat Bot') }}</option>																																											
 								<option value="standard"> {{ __('Standard Chat Bot') }}</option>
 								<option value="professional"> {{ __('Professional Chat Bot') }}</option>
 								<option value="premium"> {{ __('Premium Chat Bot') }}</option>																																																														
+							  </select>
+							</div>
+						  </div>
+
+						  <div class="col-md-6 col-sm-12">
+							<div class="input-box">
+							  <h6>{{ __('Chat Group') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
+							  <select id="group" name="group" class="form-control">
+								@foreach ($categories as $category)
+									<option value="{{ $category->code }}">{{ __($category->name) }}</option>
+								@endforeach																																																													
 							  </select>
 							</div>
 						  </div>

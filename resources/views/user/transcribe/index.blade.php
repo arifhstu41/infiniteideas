@@ -38,7 +38,7 @@
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="text-left mb-5" id="balance-status">
-								<span class="fs-11 text-muted pl-3"><i class="fa-sharp fa-solid fa-bolt-lightning mr-2 text-primary"></i>{{ __('Your Balance is') }} <span class="font-weight-semibold" id="balance-number">{{ number_format(auth()->user()->available_minutes + auth()->user()->available_minutes_prepaid) }}</span> {{ __('Minutes') }}</span>
+								<span class="fs-11 text-muted pl-3"><i class="fa-sharp fa-solid fa-bolt-lightning mr-2 text-primary"></i>{{ __('Your Balance is') }} <span class="font-weight-semibold" id="balance-number">@if (auth()->user()->available_minutes == -1) {{ __('Unlimited') }} @else {{ number_format(auth()->user()->available_minutes + auth()->user()->available_minutes_prepaid) }} {{ __('Minutes') }} @endif</span></span>
 							</div>							
 						</div>	
 						<div class="col-sm-12">								

@@ -30,23 +30,35 @@
 }
 
 #login-google {
-   color: #DB4437;
-   border: 1px solid #DB4437;
+   color: #728097;
+   border: 1px solid #DFE3E7;
 }
 
 #login-facebook {
-   color: #4267B2;
-   border: 1px solid #4267B2;
+   color: #728097;
+   border: 1px solid #DFE3E7;
 }
 
 #login-twitter {
-   color: #1DA1F2;
-   border: 1px solid #1DA1F2;
+   color: #728097;
+   border: 1px solid #DFE3E7;
+
+   &:hover {
+      svg {
+         fill: #FFF;
+      }
+   }
 }
 
 #login-linkedin {
-   color: #0e76a8;
-   border: 1px solid #0e76a8;
+   color: #728097;
+   border: 1px solid #DFE3E7;
+
+   &:hover {
+      svg {
+         fill: #FFF;
+      }
+   }
 }
 
 .login-title {
@@ -86,6 +98,39 @@
       display: flex;
       justify-content: center;
       align-items: center;
+   }
+}
+
+#frontend-local-login {
+   position: absolute;
+   top: 2rem;
+   right: 0;
+
+   .dropdown-menu {
+      top: 15px!important;
+      border-radius: 10px;
+   }
+
+   .icon {
+      span {
+         font-weight: 600;
+         color: #000;
+      }
+
+      i {
+         font-weight: 600;
+         color: #000;
+      }
+
+      &:hover {
+         span {
+            color: $primaryTextActiveColor;
+         }
+
+         i {
+            color: $primaryTextActiveColor;
+         }
+      }
    }
 }
 

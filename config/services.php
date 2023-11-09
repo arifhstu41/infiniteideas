@@ -245,4 +245,13 @@ return [
         'class' => App\Services\PaddleService::class,
     ],
 
+    'iyzico' => [
+        'enable' => env('IYZICO_ENABLED'),
+        'subscription' => env('IYZICO_SUBSCRIPTION_ENABLED'),
+        'api_key' => env('IYZICO_API_KEY'),
+        'secret_key' => env('IYZICO_SECRET_KEY'),
+        'sandbox' => env('IYZICO_SANDBOX'),
+        'class' => App\Services\IyzicoService::class,
+    ],
+
 ];

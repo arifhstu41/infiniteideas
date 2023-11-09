@@ -34,7 +34,7 @@
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="text-left mb-5" id="balance-status">
-								<span class="fs-11 text-muted pl-3"><i class="fa-sharp fa-solid fa-bolt-lightning mr-2 text-primary"></i><?php echo e(__('Your Balance is')); ?> <span class="font-weight-semibold" id="balance-number"><?php echo e(number_format(auth()->user()->available_words + auth()->user()->available_words_prepaid)); ?></span> <?php echo e(__('Words')); ?></span>
+								<span class="fs-11 text-muted pl-3"><i class="fa-sharp fa-solid fa-bolt-lightning mr-2 text-primary"></i><?php echo e(__('Your Balance is')); ?> <span class="font-weight-semibold" id="balance-number"><?php if(auth()->user()->available_words == -1): ?> <?php echo e(__('Unlimited')); ?> <?php else: ?> <?php echo e(number_format(auth()->user()->available_words + auth()->user()->available_words_prepaid)); ?> <?php echo e(__('Words')); ?> <?php endif; ?></span> </span>
 							</div>							
 						</div>	
 						<div class="col-sm-12">

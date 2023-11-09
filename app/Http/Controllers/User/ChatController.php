@@ -7,13 +7,15 @@ use App\Http\Controllers\Admin\LicenseController;
 use App\Services\Statistics\UserService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Http\Request;
 use Orhanerday\OpenAi\OpenAi;
-use App\Services\Service;
 use App\Models\SubscriptionPlan;
 use App\Models\FavoriteChat;
+use App\Models\ChatConversation;
+use App\Models\ChatCategory;
 use App\Models\ChatHistory;
+use App\Models\ChatPrompt;
+use App\Models\ApiKey;
 use App\Models\Chat;
 use App\Models\User;
 
@@ -40,9 +42,11 @@ class ChatController extends Controller
 
         $favorite_chats = Chat::select('chats.*', 'favorite_chats.*')->where('favorite_chats.user_id', auth()->user()->id)->join('favorite_chats', 'favorite_chats.chat_code', '=', 'chats.chat_code')->where('status', true)->orderBy('category', 'asc')->get();    
         $user_chats = FavoriteChat::where('user_id', auth()->user()->id)->pluck('chat_code');     
-        $other_chats = Chat::whereNotIn('chat_code', $user_chats)->where('status', true)->orderBy('category', 'asc')->get();                 
+        $other_chats = Chat::whereNotIn('chat_code', $user_chats)->where('status', true)->orderBy('category', 'asc')->get();  
+        $chat_categories = Chat::where('status', true)->groupBy('group')->pluck('group'); 
+        $categories = ChatCategory::whereIn('code', $chat_categories)->orderBy('name', 'asc')->get();                  
         
-        return view('user.chat.index', compact('favorite_chats', 'other_chats'));
+        return view('user.chat.index', compact('favorite_chats', 'other_chats', 'categories'));
     }
 
 
@@ -119,8 +123,7 @@ class ChatController extends Controller
                             return response()->json(['status' => $status, 'message' => $message]); 
                         }                  
                     }
-                }
-                      
+                }                      
             }
         } elseif (auth()->user()->group == 'subscriber') {
             $plan = SubscriptionPlan::where('id', auth()->user()->plan_id)->first();
@@ -141,82 +144,72 @@ class ChatController extends Controller
             }
         }
 
+
+        # Check personal API keys
+        if (config('settings.personal_openai_api') == 'allow') {
+            if (is_null(auth()->user()->personal_openai_key)) {
+                $status = 'error';
+                $message =  __('You must include your personal Openai API key in your profile settings first');
+                return response()->json(['status' => $status, 'message' => $message]); 
+            }     
+        } elseif (!is_null(auth()->user()->plan_id)) {
+            $check_api = SubscriptionPlan::where('id', auth()->user()->plan_id)->first();
+            if ($check_api->personal_openai_api) {
+                if (is_null(auth()->user()->personal_openai_key)) {
+                    $status = 'error';
+                    $message =  __('You must include your personal Openai API key in your profile settings first');
+                    return response()->json(['status' => $status, 'message' => $message]); 
+                } 
+            }    
+        } 
+
+
         # Check if user has sufficient words available to proceed
-        $balance = auth()->user()->available_words + auth()->user()->available_words_prepaid;
-        $words = count(explode(' ', ($request->input('message'))));
-        if ((auth()->user()->available_words + auth()->user()->available_words_prepaid) < $words) {
-            if (!is_null(auth()->user()->member_of)) {
-                if (auth()->user()->member_use_credits_chat) {
-                    $member = User::where('id', auth()->user()->member_of)->first();
-                    if (($member->available_words + $member->available_words_prepaid) < $words) {
+        if (auth()->user()->available_words != -1) {
+            $balance = auth()->user()->available_words + auth()->user()->available_words_prepaid;
+            $words = count(explode(' ', ($request->input('message'))));
+            if ((auth()->user()->available_words + auth()->user()->available_words_prepaid) < $words) {
+                if (!is_null(auth()->user()->member_of)) {
+                    if (auth()->user()->member_use_credits_chat) {
+                        $member = User::where('id', auth()->user()->member_of)->first();
+                        if (($member->available_words + $member->available_words_prepaid) < $words) {
+                            $status = 'error';
+                            $message = __('Not enough word balance to proceed, subscribe or top up your word balance and try again');
+                            return response()->json(['status' => $status, 'message' => $message]);
+                        }
+                    } else {
                         $status = 'error';
                         $message = __('Not enough word balance to proceed, subscribe or top up your word balance and try again');
                         return response()->json(['status' => $status, 'message' => $message]);
                     }
+                
                 } else {
                     $status = 'error';
                     $message = __('Not enough word balance to proceed, subscribe or top up your word balance and try again');
                     return response()->json(['status' => $status, 'message' => $message]);
-                }
-             
-            } else {
-                $status = 'error';
-                $message = __('Not enough word balance to proceed, subscribe or top up your word balance and try again');
-                return response()->json(['status' => $status, 'message' => $message]);
-            } 
-        }
-
-
-        $main_chat = Chat::where('chat_code', $request->chat_code)->first();
-        $uploading = new UserService();
-        $upload = $uploading->upload();
-        if (!$upload['status']) return;
-
-        if ($request->message_code == '') {
-            $messages = ['role' => 'system', 'content' => $main_chat->prompt];            
-            $messages[] = ['role' => 'user', 'content' => $request->input('message')];
-
-            $chat = new ChatHistory();
-            $chat->user_id = auth()->user()->id;
-            $chat->title = 'New Chat';
-            $chat->chat_code = $request->chat_code;
-            $chat->message_code = strtoupper(Str::random(10));
-            $chat->messages = 1;
-            $chat->chat = $messages;
-            $chat->save();
-        } else {
-            $chat_message = ChatHistory::where('message_code', $request->message_code)->first();
-
-            if ($chat_message) {
-
-                if (is_null($chat_message->chat)) {
-                    $messages[] = ['role' => 'system', 'content' => $main_chat->prompt]; 
-                } else {
-                    $messages = $chat_message->chat;
-                }
-                
-                array_push($messages, ['role' => 'user', 'content' => $request->input('message')]);
-                $chat_message->messages = ++$chat_message->messages;
-                $chat_message->chat = $messages;
-                $chat_message->save();
-            } else {
-                $messages[] = ['role' => 'system', 'content' => $main_chat->prompt];            
-                $messages[] = ['role' => 'user', 'content' => $request->input('message')];
-
-                $chat = new ChatHistory();
-                $chat->user_id = auth()->user()->id;
-                $chat->title = 'New Chat';
-                $chat->chat_code = $request->chat_code;
-                $chat->message_code = $request->message_code;
-                $chat->messages = 1;
-                $chat->chat = $messages;
-                $chat->save();
+                } 
             }
         }
 
-        session()->put('message_code', $request->message_code);
+        $uploading = new UserService();
+        $upload = $uploading->prompt();
+        if (!$upload['status']) return;
 
-        return response()->json(['status' => 'success', 'old'=> $balance, 'current' => ($balance - $words)]);
+        $chat = new ChatHistory();
+        $chat->user_id = auth()->user()->id;
+        $chat->conversation_id = $request->conversation_id;
+        $chat->prompt = $request->input('message');
+        $chat->save();
+        
+
+        session()->put('conversation_id', $request->conversation_id);
+        session()->put('chat_id', $chat->id);
+
+        if (auth()->user()->available_words != -1) {
+            return response()->json(['status' => 'success', 'old'=> $balance, 'current' => ($balance - $words), 'chat_id' => $chat->id]);
+        } else {
+            return response()->json(['status' => 'success', 'old'=> 0, 'current' => 0, 'chat_id' => $chat->id]);
+        }
 
 	}
 
@@ -230,14 +223,53 @@ class ChatController extends Controller
 	*/
     public function generateChat(Request $request) 
     {  
-        $message_code = $request->message_code;
+        $conversation_id = $request->conversation_id;
 
-        return response()->stream(function () use($message_code) {
+        return response()->stream(function () use($conversation_id) {
 
-            $open_ai = new OpenAi(config('services.openai.key'));
+            if (config('settings.personal_openai_api') == 'allow') {
+                $open_ai = new OpenAi(auth()->user()->personal_openai_key);        
+            } elseif (!is_null(auth()->user()->plan_id)) {
+                $check_api = SubscriptionPlan::where('id', auth()->user()->plan_id)->first();
+                if ($check_api->personal_openai_api) {
+                    $open_ai = new OpenAi(auth()->user()->personal_openai_key);               
+                } else {
+                    if (config('settings.openai_key_usage') !== 'main') {
+                       $api_keys = ApiKey::where('engine', 'openai')->where('status', true)->pluck('api_key')->toArray();
+                       array_push($api_keys, config('services.openai.key'));
+                       $key = array_rand($api_keys, 1);
+                       $open_ai = new OpenAi($api_keys[$key]);
+                   } else {
+                       $open_ai = new OpenAi(config('services.openai.key'));
+                   }
+               }
+               
+            } else {
+                if (config('settings.openai_key_usage') !== 'main') {
+                    $api_keys = ApiKey::where('engine', 'openai')->where('status', true)->pluck('api_key')->toArray();
+                    array_push($api_keys, config('services.openai.key'));
+                    $key = array_rand($api_keys, 1);
+                    $open_ai = new OpenAi($api_keys[$key]);
+                } else {
+                    $open_ai = new OpenAi(config('services.openai.key'));
+                }
+            }
+    
+            if (session()->has('chat_id')) {
+                $chat_id = session()->get('chat_id');
+            }
 
-            $chat_message = ChatHistory::where('message_code', $message_code)->first();
-            $messages = $chat_message->chat;
+            $chat_conversation = ChatConversation::where('conversation_id', $conversation_id)->first();
+            $main_chat = Chat::where('chat_code', $chat_conversation->chat_code)->first();
+            $chat_message = ChatHistory::where('conversation_id', $conversation_id)->orderBy('created_at', 'desc')->take(6)->get()->reverse();
+
+            $messages[] = ['role' => 'system', 'content' => $main_chat->prompt];
+            foreach ($chat_message as $chat) {
+                $messages[] = ['role' => 'user', 'content' => $chat['prompt']];
+                if (!empty($chat['response'])) {
+                    $messages[] = ['role' => 'assistant', 'content' => $chat['response']];
+                }
+            }
 
             $text = "";
 
@@ -272,25 +304,19 @@ class ChatController extends Controller
                 ];
             }
             
-            
+
             $complete = $open_ai->chat($opts, function ($curl_info, $data) use (&$text) {
                 if ($obj = json_decode($data) and $obj->error->message != "") {
                     error_log(json_encode($obj->error->message));
                 } else {
                     echo $data;
 
-                    $clean = str_replace("data: ", "", $data);
-                    $first = str_replace("}\n\n{", ",", $clean);
-    
-                    if(str_contains($first, 'assistant')) {
-                        $raw = str_replace('"choices":[{"delta":{"role":"assistant"', '"random":[{"alpha":{"role":"assistant"', $first);
-                        $response = json_decode($raw, true);
-                    } else {
-                        $response = json_decode($clean, true);
-                    }    
-        
-                    if ($data != "data: [DONE]\n\n" and isset($response["choices"][0]["delta"]["content"])) {
-                        $text .= $response["choices"][0]["delta"]["content"];
+                    $array = explode('data: ', $data);
+                    foreach ($array as $response){
+                        $response = json_decode($response, true);
+                        if ($data != "data: [DONE]\n\n" and isset($response["choices"][0]["delta"]["content"])) {
+                            $text .= $response["choices"][0]["delta"]["content"];
+                        }
                     }
                 }
 
@@ -303,14 +329,19 @@ class ChatController extends Controller
             # Update credit balance
             $words = count(explode(' ', ($text)));
             $this->updateBalance($words);  
-            
-            array_push($messages, ['role' => 'assistant', 'content' => $text]);
-            $chat_message->messages = ++$chat_message->messages;
-            $chat_message->chat = $messages;
-            $chat_message->save();
-           
+
+            $current_chat = ChatHistory::where('id', $chat_id)->first();
+            $current_chat->response = $text;
+            $current_chat->words = $words;
+            $current_chat->save();
+
+            $chat_conversation->words = ++$words;
+            $chat_conversation->messages = $chat_conversation->messages + 1;
+            $chat_conversation->save();
+
         }, 200, [
             'Cache-Control' => 'no-cache',
+            'X-Accel-Buffering' => 'no',
             'Content-Type' => 'text/event-stream',
         ]);
         
@@ -326,8 +357,8 @@ class ChatController extends Controller
 	*/
 	public function clear(Request $request) 
     {
-        if (session()->has('message_code')) {
-            session()->forget('message_code');
+        if (session()->has('conversation_id')) {
+            session()->forget('conversation_id');
         }
 
         return response()->json(['status' => 'success']);
@@ -346,64 +377,66 @@ class ChatController extends Controller
 
         $user = User::find(Auth::user()->id);
 
-        if (Auth::user()->available_words > $words) {
-
-            $total_words = Auth::user()->available_words - $words;
-            $user->available_words = ($total_words < 0) ? 0 : $total_words;
-            $user->update();
-
-        } elseif (Auth::user()->available_words_prepaid > $words) {
-
-            $total_words_prepaid = Auth::user()->available_words_prepaid - $words;
-            $user->available_words_prepaid = ($total_words_prepaid < 0) ? 0 : $total_words_prepaid;
-            $user->update();
-
-        } elseif ((Auth::user()->available_words + Auth::user()->available_words_prepaid) == $words) {
-
-            $user->available_words = 0;
-            $user->available_words_prepaid = 0;
-            $user->update();
-
-        } else {
-
-            if (!is_null(Auth::user()->member_of)) {
-
-                $member = User::where('id', Auth::user()->member_of)->first();
-
-                if ($member->available_words > $words) {
-
-                    $total_words = $member->available_words - $words;
-                    $member->available_words = ($total_words < 0) ? 0 : $total_words;
+        if (auth()->user()->available_words != -1) {
         
-                } elseif ($member->available_words_prepaid > $words) {
-        
-                    $total_words_prepaid = $member->available_words_prepaid - $words;
-                    $member->available_words_prepaid = ($total_words_prepaid < 0) ? 0 : $total_words_prepaid;
-        
-                } elseif (($member->available_words + $member->available_words_prepaid) == $words) {
-        
-                    $member->available_words = 0;
-                    $member->available_words_prepaid = 0;
-        
-                } else {
-                    $remaining = $words - $member->available_words;
-                    $member->available_words = 0;
-    
-                    $prepaid_left = $member->available_words_prepaid - $remaining;
-                    $member->available_words_prepaid = ($prepaid_left < 0) ? 0 : $prepaid_left;
-                }
+            if (Auth::user()->available_words > $words) {
 
-                $member->update();
+                $total_words = Auth::user()->available_words - $words;
+                $user->available_words = ($total_words < 0) ? 0 : $total_words;
+                $user->update();
+
+            } elseif (Auth::user()->available_words_prepaid > $words) {
+
+                $total_words_prepaid = Auth::user()->available_words_prepaid - $words;
+                $user->available_words_prepaid = ($total_words_prepaid < 0) ? 0 : $total_words_prepaid;
+                $user->update();
+
+            } elseif ((Auth::user()->available_words + Auth::user()->available_words_prepaid) == $words) {
+
+                $user->available_words = 0;
+                $user->available_words_prepaid = 0;
+                $user->update();
 
             } else {
-                $remaining = $words - Auth::user()->available_words;
-                $user->available_words = 0;
 
-                $prepaid_left = Auth::user()->available_words_prepaid - $remaining;
-                $user->available_words_prepaid = ($prepaid_left < 0) ? 0 : $prepaid_left;
-                $user->update();
-            }  
+                if (!is_null(Auth::user()->member_of)) {
 
+                    $member = User::where('id', Auth::user()->member_of)->first();
+
+                    if ($member->available_words > $words) {
+
+                        $total_words = $member->available_words - $words;
+                        $member->available_words = ($total_words < 0) ? 0 : $total_words;
+            
+                    } elseif ($member->available_words_prepaid > $words) {
+            
+                        $total_words_prepaid = $member->available_words_prepaid - $words;
+                        $member->available_words_prepaid = ($total_words_prepaid < 0) ? 0 : $total_words_prepaid;
+            
+                    } elseif (($member->available_words + $member->available_words_prepaid) == $words) {
+            
+                        $member->available_words = 0;
+                        $member->available_words_prepaid = 0;
+            
+                    } else {
+                        $remaining = $words - $member->available_words;
+                        $member->available_words = 0;
+        
+                        $prepaid_left = $member->available_words_prepaid - $remaining;
+                        $member->available_words_prepaid = ($prepaid_left < 0) ? 0 : $prepaid_left;
+                    }
+
+                    $member->update();
+
+                } else {
+                    $remaining = $words - Auth::user()->available_words;
+                    $user->available_words = 0;
+
+                    $prepaid_left = Auth::user()->available_words_prepaid - $remaining;
+                    $user->available_words_prepaid = ($prepaid_left < 0) ? 0 : $prepaid_left;
+                    $user->update();
+                }  
+            }
         }
 
         return true;
@@ -412,22 +445,43 @@ class ChatController extends Controller
 
     /**
 	*
-	* Update user word balance
+	* Chat conversation
 	* @param - total words generated
 	* @return - confirmation
 	*
 	*/
-    public function messages(Request $request) {
+    public function conversation(Request $request) {
 
         if ($request->ajax()) {
 
-            if (session()->has('message_code')) {
-                session()->forget('message_code');
-            }
+            $chat = new ChatConversation();
+            $chat->user_id = auth()->user()->id;
+            $chat->title = 'New Conversation';
+            $chat->chat_code = $request->chat_code;
+            $chat->conversation_id = $request->conversation_id;
+            $chat->messages = 0;
+            $chat->words = 0;
+            $chat->save();
 
-            $messages = ChatHistory::where('user_id', auth()->user()->id)->where('message_code', $request->code)->first();
-            $message = ($messages) ? json_encode($messages, false) : 'new';
-            return $message;
+            $data = 'success';
+            return $data;
+        }   
+    }
+
+
+    /**
+	*
+	* Chat history
+	* @param - total words generated
+	* @return - confirmation
+	*
+	*/
+    public function history(Request $request) {
+
+        if ($request->ajax()) {
+
+            $messages = ChatHistory::where('user_id', auth()->user()->id)->where('conversation_id', $request->conversation_id)->get();
+            return $messages;
         }   
     }
 
@@ -441,24 +495,23 @@ class ChatController extends Controller
 	*/
 	public function view($code) 
     {
-        if (session()->has('message_code')) {
-            session()->forget('message_code');
+        if (session()->has('conversation_id')) {
+            session()->forget('conversation_id');
         }
 
         $chat = Chat::where('chat_code', $code)->first(); 
-        $messages = ChatHistory::where('user_id', auth()->user()->id)->where('chat_code', $chat->chat_code)->orderBy('updated_at', 'desc')->get(); 
-        $message_chat = ChatHistory::where('user_id', auth()->user()->id)->where('chat_code', $chat->chat_code)->latest('updated_at')->first(); 
-        $default_message = ($message_chat) ? json_encode($message_chat, false) : 'new';
+        $messages = ChatConversation::where('user_id', auth()->user()->id)->where('chat_code', $chat->chat_code)->orderBy('updated_at', 'desc')->get(); 
 
+        $categories = ChatPrompt::where('status', true)->groupBy('group')->pluck('group'); 
+        $prompts = ChatPrompt::all();
 
-
-        return view('user.chat.view', compact('chat', 'messages', 'default_message'));
+        return view('user.chat.view', compact('chat', 'messages', 'categories', 'prompts'));
 	}
 
 
     /**
 	*
-	* Rename chat
+	* Rename conversation
 	* @param - file id in DB
 	* @return - confirmation
 	*
@@ -467,7 +520,7 @@ class ChatController extends Controller
     {
         if ($request->ajax()) {
 
-            $chat = ChatHistory::where('message_code', request('code'))->first(); 
+            $chat = ChatConversation::where('conversation_id', request('conversation_id'))->first(); 
 
             if ($chat) {
                 if ($chat->user_id == auth()->user()->id){
@@ -476,13 +529,13 @@ class ChatController extends Controller
                     $chat->save();
     
                     $data['status'] = 'success';
-                    $data['code'] = request('code');
+                    $data['conversation_id'] = request('conversation_id');
                     return $data;  
         
                 } else{
     
                     $data['status'] = 'error';
-                    $data['message'] = __('There was an error while changing the chat title');
+                    $data['message'] = __('There was an error while changing the conversation title');
                     return $data;
                 }
             } 
@@ -502,15 +555,15 @@ class ChatController extends Controller
     {
         if ($request->ajax()) {
 
-            $chat = ChatHistory::where('message_code', request('code'))->first(); 
+            $chat = ChatConversation::where('conversation_id', request('conversation_id'))->first(); 
 
             if ($chat) {
                 if ($chat->user_id == auth()->user()->id){
 
                     $chat->delete();
 
-                    if (session()->has('message_code')) {
-                        session()->forget('message_code');
+                    if (session()->has('conversation_id')) {
+                        session()->forget('conversation_id');
                     }
     
                     $data['status'] = 'success';

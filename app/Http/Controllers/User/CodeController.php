@@ -47,13 +47,45 @@ class CodeController extends Controller
     {
         if ($request->ajax()) {
 
-            if (config('settings.openai_key_usage') == 'main') {
-                $open_ai = new OpenAi(config('services.openai.key'));
+            if (config('settings.personal_openai_api') == 'allow') {
+                if (is_null(auth()->user()->personal_openai_key)) {
+                    $data['status'] = 'error';
+                    $data['message'] = __('You must include your personal Openai API key in your profile settings first');
+                    return $data; 
+                } else {
+                    $open_ai = new OpenAi(auth()->user()->personal_openai_key);
+                } 
+    
+            } elseif (!is_null(auth()->user()->plan_id)) {
+                $check_api = SubscriptionPlan::where('id', auth()->user()->plan_id)->first();
+                if ($check_api->personal_openai_api) {
+                    if (is_null(auth()->user()->personal_openai_key)) {
+                        $data['status'] = 'error';
+                        $data['message'] = __('You must include your personal Openai API key in your profile settings first');
+                        return $data; 
+                    } else {
+                        $open_ai = new OpenAi(auth()->user()->personal_openai_key);
+                    }
+                } else {
+                    if (config('settings.openai_key_usage') !== 'main') {
+                       $api_keys = ApiKey::where('engine', 'openai')->where('status', true)->pluck('api_key')->toArray();
+                       array_push($api_keys, config('services.openai.key'));
+                       $key = array_rand($api_keys, 1);
+                       $open_ai = new OpenAi($api_keys[$key]);
+                   } else {
+                       $open_ai = new OpenAi(config('services.openai.key'));
+                   }
+               }
+    
             } else {
-                $api_keys = ApiKey::where('engine', 'openai')->where('status', true)->pluck('api_key')->toArray();
-                array_push($api_keys, config('services.openai.key'));
-                $key = array_rand($api_keys, 1);
-                $open_ai = new OpenAi($api_keys[$key]);
+                if (config('settings.openai_key_usage') !== 'main') {
+                    $api_keys = ApiKey::where('engine', 'openai')->where('status', true)->pluck('api_key')->toArray();
+                    array_push($api_keys, config('services.openai.key'));
+                    $key = array_rand($api_keys, 1);
+                    $open_ai = new OpenAi($api_keys[$key]);
+                } else {
+                    $open_ai = new OpenAi(config('services.openai.key'));
+                }
             }
 
             $verify = $this->api->verify_license();
@@ -80,26 +112,28 @@ class CodeController extends Controller
             }   
             
             # Verify if user has enough credits
-            if ((auth()->user()->available_words + auth()->user()->available_words_prepaid) < 50) {
-                if (!is_null(auth()->user()->member_of)) {
-                    if (auth()->user()->member_use_credits_code) {
-                        $member = User::where('id', auth()->user()->member_of)->first();
-                        if (($member->available_words + $member->available_words_prepaid) < 50) {
+            if (auth()->user()->available_words != -1) {
+                if ((auth()->user()->available_words + auth()->user()->available_words_prepaid) < 50) {
+                    if (!is_null(auth()->user()->member_of)) {
+                        if (auth()->user()->member_use_credits_code) {
+                            $member = User::where('id', auth()->user()->member_of)->first();
+                            if (($member->available_words + $member->available_words_prepaid) < 50) {
+                                $data['status'] = 'error';
+                                $data['message'] = __('Not enough word balance to proceed, subscribe or top up your word balance and try again');
+                                return $data;
+                            }
+                        } else {
                             $data['status'] = 'error';
                             $data['message'] = __('Not enough word balance to proceed, subscribe or top up your word balance and try again');
                             return $data;
                         }
+                        
                     } else {
                         $data['status'] = 'error';
                         $data['message'] = __('Not enough word balance to proceed, subscribe or top up your word balance and try again');
                         return $data;
-                    }
-                    
-                } else {
-                    $data['status'] = 'error';
-                    $data['message'] = __('Not enough word balance to proceed, subscribe or top up your word balance and try again');
-                    return $data;
-                } 
+                    } 
+                }
             }
 
             if ($request->language != 'html' || $request->language == 'none') {
@@ -185,60 +219,62 @@ class CodeController extends Controller
 
         $user = User::find(Auth::user()->id);
 
-        if (Auth::user()->available_words > $words) {
-
-            $total_words = Auth::user()->available_words - $words;
-            $user->available_words = ($total_words < 0) ? 0 : $total_words;
-
-        } elseif (Auth::user()->available_words_prepaid > $words) {
-
-            $total_words_prepaid = Auth::user()->available_words_prepaid - $words;
-            $user->available_words_prepaid = ($total_words_prepaid < 0) ? 0 : $total_words_prepaid;
-
-        } elseif ((Auth::user()->available_words + Auth::user()->available_words_prepaid) == $words) {
-
-            $user->available_words = 0;
-            $user->available_words_prepaid = 0;
-
-        } else {
-
-            if (!is_null(Auth::user()->member_of)) {
-
-                $member = User::where('id', Auth::user()->member_of)->first();
-
-                if ($member->available_words > $words) {
-
-                    $total_words = $member->available_words - $words;
-                    $member->available_words = ($total_words < 0) ? 0 : $total_words;
+        if (auth()->user()->available_words != -1) {
         
-                } elseif ($member->available_words_prepaid > $words) {
-        
-                    $total_words_prepaid = $member->available_words_prepaid - $words;
-                    $member->available_words_prepaid = ($total_words_prepaid < 0) ? 0 : $total_words_prepaid;
-        
-                } elseif (($member->available_words + $member->available_words_prepaid) == $words) {
-        
-                    $member->available_words = 0;
-                    $member->available_words_prepaid = 0;
-        
-                } else {
-                    $remaining = $words - $member->available_words;
-                    $member->available_words = 0;
-    
-                    $prepaid_left = $member->available_words_prepaid - $remaining;
-                    $member->available_words_prepaid = ($prepaid_left < 0) ? 0 : $prepaid_left;
-                }
+            if (Auth::user()->available_words > $words) {
 
-                $member->update();
+                $total_words = Auth::user()->available_words - $words;
+                $user->available_words = ($total_words < 0) ? 0 : $total_words;
+
+            } elseif (Auth::user()->available_words_prepaid > $words) {
+
+                $total_words_prepaid = Auth::user()->available_words_prepaid - $words;
+                $user->available_words_prepaid = ($total_words_prepaid < 0) ? 0 : $total_words_prepaid;
+
+            } elseif ((Auth::user()->available_words + Auth::user()->available_words_prepaid) == $words) {
+
+                $user->available_words = 0;
+                $user->available_words_prepaid = 0;
 
             } else {
-                $remaining = $words - Auth::user()->available_words;
-                $user->available_words = 0;
 
-                $prepaid_left = Auth::user()->available_words_prepaid - $remaining;
-                $user->available_words_prepaid = ($prepaid_left < 0) ? 0 : $prepaid_left;
+                if (!is_null(Auth::user()->member_of)) {
+
+                    $member = User::where('id', Auth::user()->member_of)->first();
+
+                    if ($member->available_words > $words) {
+
+                        $total_words = $member->available_words - $words;
+                        $member->available_words = ($total_words < 0) ? 0 : $total_words;
+            
+                    } elseif ($member->available_words_prepaid > $words) {
+            
+                        $total_words_prepaid = $member->available_words_prepaid - $words;
+                        $member->available_words_prepaid = ($total_words_prepaid < 0) ? 0 : $total_words_prepaid;
+            
+                    } elseif (($member->available_words + $member->available_words_prepaid) == $words) {
+            
+                        $member->available_words = 0;
+                        $member->available_words_prepaid = 0;
+            
+                    } else {
+                        $remaining = $words - $member->available_words;
+                        $member->available_words = 0;
+        
+                        $prepaid_left = $member->available_words_prepaid - $remaining;
+                        $member->available_words_prepaid = ($prepaid_left < 0) ? 0 : $prepaid_left;
+                    }
+
+                    $member->update();
+
+                } else {
+                    $remaining = $words - Auth::user()->available_words;
+                    $user->available_words = 0;
+
+                    $prepaid_left = Auth::user()->available_words_prepaid - $remaining;
+                    $user->available_words_prepaid = ($prepaid_left < 0) ? 0 : $prepaid_left;
+                }
             }
-
         }
 
         $user->update();

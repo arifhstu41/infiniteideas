@@ -33,6 +33,7 @@
 									<h6>{{ __('Plan Status') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
 									<select id="plan-status" name="plan-status" class="form-select" data-placeholder="{{ __('Select Plan Status') }}:">			
 										<option value="active" selected>{{ __('Active') }}</option>
+										<option value="hidden">{{ __('Hidden') }}</option>
 										<option value="closed">{{ __('Closed') }}</option>
 									</select>
 									@error('plan-status')
@@ -110,6 +111,18 @@
 									</div> 
 									@error('free-plan')
 										<p class="text-danger">{{ $errors->first('free-plan') }}</p>
+									@enderror
+								</div> 						
+							</div>
+
+							<div class="col-lg-6 col-md-6 col-sm-12">							
+								<div class="input-box">								
+									<h6>{{ __('Free Plan Days') }}</h6>
+									<div class="form-group">							    
+										<input type="number" class="form-control" id="days" name="days" min=0 value="{{ old('days') }}">
+									</div> 
+									@error('days')
+										<p class="text-danger">{{ $errors->first('days') }}</p>
 									@enderror
 								</div> 						
 							</div>
@@ -205,7 +218,7 @@
 											<h6>{{ __('Words included in the Plan') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span> <span class="text-muted ml-3">({{ __('Renewed Monthly') }})</span></h6>
 											<div class="form-group">							    
 												<input type="number" class="form-control" id="words" name="words" value="{{ old('words') }}" required>
-												<span class="text-muted fs-10">{{ __('Each text generation task will count total input by user and output words by openai') }}</span>
+												<span class="text-muted fs-10">{{ __('Each text generation task counts output words created') }}. {{ __('Set as -1 for unlimited words') }}.</span>
 											</div> 
 											@error('words')
 												<p class="text-danger">{{ $errors->first('words') }}</p>
@@ -218,7 +231,7 @@
 											<h6>{{ __('Images included in the Plan') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span> <span class="text-muted ml-3">({{ __('Renewed Monthly') }})</span></h6>
 											<div class="form-group">							    
 												<input type="number" class="form-control" id="images" name="images" value="{{ old('images') }}" required>
-												<span class="text-muted fs-10">{{ __('Valid for all image sizes') }}</span>
+												<span class="text-muted fs-10">{{ __('Valid for all image sizes') }}. {{ __('Set as -1 for unlimited images') }}.</span>
 											</div> 
 											@error('images')
 												<p class="text-danger">{{ $errors->first('images') }}</p>
@@ -231,7 +244,7 @@
 											<h6>{{ __('Characters included in the Plan') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span> <span class="text-muted ml-3">({{ __('Renewed Monthly') }})</span></h6>
 											<div class="form-group">							    
 												<input type="number" class="form-control" id="characters" name="characters" value="{{ old('characters') }}" required>
-												<span class="text-muted fs-10">{{ __('For AI Voiceover feature') }}</span>
+												<span class="text-muted fs-10">{{ __('For AI Voiceover feature') }}. {{ __('Set as -1 for unlimited characters') }}.</span>
 											</div> 
 											@error('characters')
 												<p class="text-danger">{{ $errors->first('characters') }}</p>
@@ -244,7 +257,7 @@
 											<h6>{{ __('Minutes included in the Plan') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span> <span class="text-muted ml-3">({{ __('Renewed Monthly') }})</span></h6>
 											<div class="form-group">							    
 												<input type="number" class="form-control" id="minutes" name="minutes" value="{{ old('minutes') }}" required>
-												<span class="text-muted fs-10">{{ __('For AI Speech to Text feature') }}</span>
+												<span class="text-muted fs-10">{{ __('For AI Speech to Text feature') }}. {{ __('Set as -1 for unlimited minutes') }}.</span>
 											</div> 
 											@error('minutes')
 												<p class="text-danger">{{ $errors->first('minutes') }}</p>
@@ -363,6 +376,26 @@
 											<select id="code-feature" name="code-feature" class="form-select" data-placeholder="{{ __('Allow/Deny AI Code Feature Usage') }}">
 												<option value=1 selected>{{ __('Allow') }}</option>
 												<option value=0> {{ __('Deny') }}</option>																															
+											</select>
+										</div>
+									</div>
+
+									<div class="col-lg-6 col-md-6 col-sm-12">
+										<div class="input-box">
+											<h6>{{ __('Personal OpenAI API Usage Feature') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
+											<select id="personal-openai-api" name="personal-openai-api" class="form-select">
+												<option value=1>{{ __('Allow') }}</option>
+												<option value=0 selected>{{ __('Deny') }}</option>																																																																																																								
+											</select>
+										</div>
+									</div>
+		
+									<div class="col-lg-6 col-md-6 col-sm-12">
+										<div class="input-box">
+											<h6>{{ __('Personal Stable Diffusion API Usage Feature') }} <span class="text-required"><i class="fa-solid fa-asterisk"></i></span></h6>
+											<select id="personal-sd-api" name="personal-sd-api" class="form-select">
+												<option value=1>{{ __('Allow') }}</option>
+												<option value=0 selected>{{ __('Deny') }}</option>																																																																																																								
 											</select>
 										</div>
 									</div>

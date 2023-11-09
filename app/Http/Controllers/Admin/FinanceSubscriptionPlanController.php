@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\SubscriptionPlan;
+use App\Models\Subscriber;
 use DataTables;
+use DB;
 
 class FinanceSubscriptionPlanController extends Controller
 {   
@@ -22,14 +24,14 @@ class FinanceSubscriptionPlanController extends Controller
                     ->addIndexColumn()
                     ->addColumn('actions', function($row){
                         $actionBtn = '<div>                                            
-                                            <a href="'. route("admin.finance.plan.show", $row["id"] ). '"><i class="fa-solid fa-file-invoice-dollar table-action-buttons edit-action-button" title="View Plan"></i></a>
-                                            <a href="'. route("admin.finance.plan.edit", $row["id"] ). '"><i class="fa-solid fa-file-pen table-action-buttons view-action-button" title="Update Plan"></i></a>
-                                            <a class="deletePlanButton" id="'. $row["id"] .'" href="#"><i class="fa-solid fa-trash-xmark table-action-buttons delete-action-button" title="Delete Plan"></i></a>
+                                            <a href="'. route("admin.finance.plan.show", $row["id"] ). '"><i class="fa-solid fa-file-invoice-dollar table-action-buttons edit-action-button" title="'. __('View Plan') .'"></i></a>
+                                            <a href="'. route("admin.finance.plan.edit", $row["id"] ). '"><i class="fa-solid fa-file-pen table-action-buttons view-action-button" title="'. __('Update Plan') .'"></i></a>
+                                            <a class="deletePlanButton" id="'. $row["id"] .'" href="#"><i class="fa-solid fa-trash-xmark table-action-buttons delete-action-button" title="'. __('Delete Plan') .'"></i></a>
                                         </div>';
                         return $actionBtn;
                     })
                     ->addColumn('created-on', function($row){
-                        $created_on = '<span class="font-weight-bold">'.date_format($row["created_at"], 'd M Y').'</span><br><span>'.date_format($row["created_at"], 'H:i A').'</span>';
+                        $created_on = '<span>'.date_format($row["created_at"], 'd/m/Y').'</span><br><span>'.date_format($row["created_at"], 'H:i A').'</span>';
                         return $created_on;
                     })
                     ->addColumn('custom-status', function($row){
@@ -41,19 +43,28 @@ class FinanceSubscriptionPlanController extends Controller
                         return $custom_status;
                     })
                     ->addColumn('custom-words', function($row){
-                        $custom_storage = '<span class="font-weight-bold">'.number_format($row['words']).'</span>';
+                        $value = ($row['words'] == -1) ? __('Unlimited') : number_format($row['words']);
+                        $custom_storage = '<span>'.$value.'</span>';
                         return $custom_storage;
                     })
                     ->addColumn('custom-images', function($row){
-                        $custom_storage = '<span class="font-weight-bold">'.number_format($row['images']).'</span>';
+                        $value = ($row['images'] == -1) ? __('Unlimited') : number_format($row['images']);
+                        $custom_storage = '<span>'.$value.'</span>';
                         return $custom_storage;
                     })
                     ->addColumn('custom-characters', function($row){
-                        $custom_storage = '<span class="font-weight-bold">'.number_format($row['characters']).'</span>';
+                        $value = ($row['characters'] == -1) ? __('Unlimited') : number_format($row['characters']);
+                        $custom_storage = '<span>'.$value.'</span>';
                         return $custom_storage;
                     })
                     ->addColumn('custom-minutes', function($row){
-                        $custom_storage = '<span class="font-weight-bold">'.number_format($row['minutes']).'</span>';
+                        $value = ($row['minutes'] == -1) ? __('Unlimited') : number_format($row['minutes']);
+                        $custom_storage = '<span>'.$value.'</span>';
+                        return $custom_storage;
+                    })
+                    ->addColumn('custom-subscribers', function($row){
+                        $value = $this->countSubscribers($row['id']);
+                        $custom_storage = '<span class="font-weight-bold">'.$value.'</span>';
                         return $custom_storage;
                     })
                     ->addColumn('custom-name', function($row){
@@ -65,17 +76,12 @@ class FinanceSubscriptionPlanController extends Controller
                         $custom_featured = '<span class="font-weight-bold">'.$icon.'</span>';
                         return $custom_featured;
                     })
-                    ->addColumn('custom-image', function($row){
-                        $icon = ($row['image_feature'] == true) ? '<i class="fa-solid fa-circle-check text-success fs-16"></i>' : '<i class="fa-solid fa-circle-xmark fs-16"></i>';
-                        $custom_featured = '<span class="font-weight-bold">'.$icon.'</span>';
-                        return $custom_featured;
-                    })
                     ->addColumn('custom-free', function($row){
                         $icon = ($row['free'] == true) ? '<i class="fa-solid fa-circle-check text-success fs-16"></i>' : '<i class="fa-solid fa-circle-xmark fs-16"></i>';
                         $custom_featured = '<span class="font-weight-bold">'.$icon.'</span>';
                         return $custom_featured;
                     })
-                    ->rawColumns(['actions', 'custom-status', 'created-on', 'frequency', 'custom-words', 'custom-name', 'custom-featured', 'custom-free', 'custom-image', 'custom-images', 'custom-characters', 'custom-minutes'])
+                    ->rawColumns(['actions', 'custom-status', 'created-on', 'custom-subscribers', 'frequency', 'custom-words', 'custom-name', 'custom-featured', 'custom-free', 'custom-images', 'custom-characters', 'custom-minutes'])
                     ->make(true);
                     
         }
@@ -108,11 +114,10 @@ class FinanceSubscriptionPlanController extends Controller
             'plan-name' => 'required',
             'cost' => 'required|numeric',
             'currency' => 'required',
-            'words' => 'required|integer|min:0',
-            'images' => 'required|integer|min:0',
-            'characters' => 'required|integer|min:0',
-            'minutes' => 'required|integer|min:0',
-            'tokens' => 'required|integer|min:0',
+            'words' => 'required',
+            'images' => 'required',
+            'characters' => 'required',
+            'minutes' => 'required',
             'frequency' => 'required',
             'image-feature' => 'required',
             'templates' => 'required'
@@ -139,6 +144,8 @@ class FinanceSubscriptionPlanController extends Controller
             'words' => request('words'),
             'chats' => request('chats'),
             'images' => request('images'),
+            'characters' => request('characters'),
+            'minutes' => request('minutes'),
             'payment_frequency' => request('frequency'),
             'primary_heading' => request('primary-heading'),
             'featured' => request('featured'),
@@ -147,6 +154,9 @@ class FinanceSubscriptionPlanController extends Controller
             'model' => request('model'),
             'model_chat' => request('chat-model'),
             'team_members' => request('team-members'),
+            'personal_openai_api' => request('personal-openai-api'),
+            'personal_sd_api' => request('personal-sd-api'),
+            'days' => request('days'),
         ]); 
                
         $plan->save();            
@@ -194,8 +204,10 @@ class FinanceSubscriptionPlanController extends Controller
             'plan-name' => 'required',
             'cost' => 'required|numeric',
             'currency' => 'required',
-            'words' => 'required|integer|min:0',
-            'images' => 'required|integer|min:0',
+            'words' => 'required',
+            'images' => 'required',
+            'characters' => 'required',
+            'minutes' => 'required',
             'frequency' => 'required',
         ]);
 
@@ -230,6 +242,9 @@ class FinanceSubscriptionPlanController extends Controller
             'model' => request('model'),
             'model_chat' => request('chat-model'),
             'team_members' => request('team-members'),
+            'personal_openai_api' => request('personal-openai-api'),
+            'personal_sd_api' => request('personal-sd-api'),
+            'days' => request('days'),
         ]); 
            
         toastr()->success(__('Selected plan has been updated successfully'));
@@ -259,5 +274,15 @@ class FinanceSubscriptionPlanController extends Controller
                 return response()->json('error');
             } 
         }
+    }
+
+    public function countSubscribers($id)
+    {
+        $total_voiceover = Subscriber::select(DB::raw("count(id) as data"))
+                ->where('plan_id', $id)
+                ->where('status', 'Active')
+                ->get();  
+        
+        return $total_voiceover[0]['data'];
     }
 }

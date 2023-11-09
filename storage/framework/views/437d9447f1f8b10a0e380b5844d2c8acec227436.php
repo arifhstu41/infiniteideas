@@ -116,7 +116,8 @@
 				colReorder: true,
 				"order": [[ 1, "desc" ]],
 				language: {
-					"emptyTable": "<div><img id='no-results-img' src='<?php echo e(URL::asset('img/files/no-support.png')); ?>'><br>No created support tickets yet</div>",
+					"emptyTable": "<div><img id='no-results-img' src='<?php echo e(URL::asset('img/files/no-support.png')); ?>'><br><?php echo e(__('No created support tickets yet')); ?></div>",
+					"info": "<?php echo e(__('Showing page')); ?> _PAGE_ <?php echo e(__('of')); ?> _PAGES_",
 					search: "<i class='fa fa-search search-icon'></i>",
 					lengthMenu: '_MENU_ ',
 					paginate : {

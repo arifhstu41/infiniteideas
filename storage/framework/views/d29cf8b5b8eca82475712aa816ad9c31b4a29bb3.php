@@ -8,73 +8,170 @@
 <?php $__env->startSection('content'); ?>
 
 	<div class="row mt-24">
-		<div id="chat-search-panel">
-			<h3 class="card-title mb-3 ml-2 fs-20"><i class="fa-solid fa-message-captions mr-2 text-primary"></i><?php echo e(__('AI Chat Assistants')); ?></h3>
-			<h6 class="text-muted mb-3 ml-2"><?php echo e(__('Find your AI assistant quickly! Get ready to explore our fantastic lineup of AI chat assistants')); ?></h6>
-			<div class="search-template">
-				<div class="input-box">								
-					<div class="form-group">							    
-						<input type="text" class="form-control" id="search-template" placeholder="<?php echo e(__('Search for your AI assistant...')); ?>">
+		<div class="col-lg-12 col-md-12 col-sm-12 p-4">
+			<div id="chat-search-panel">
+				<h3 class="card-title mb-3 ml-2 fs-20 super-strong"><i class="fa-solid fa-message-captions mr-2 text-primary"></i><?php echo e(__('AI Chat Assistants')); ?></h3>
+				<h6 class="text-muted mb-3 ml-2"><?php echo e(__('Find your AI assistant quickly! Get ready to explore our fantastic lineup of AI chat assistants')); ?></h6>
+				<div class="search-template">
+					<div class="input-box">								
+						<div class="form-group">							    
+							<input type="text" class="form-control" id="search-template" placeholder="<?php echo e(__('Search for your AI assistant...')); ?>">
+						</div> 
 					</div> 
-				</div> 
+				</div>
 			</div>
-		</div>
+
+			<div class="templates-nav-menu chat-nav-menu">
+				<div class="template-nav-menu-inner">
+					<ul class="nav nav-tabs" id="myTab" role="tablist">
+						<li class="nav-item" role="presentation">
+							<button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab" aria-controls="all" aria-selected="true"><?php echo e(__('All AI Chats')); ?></button>
+						</li>
+						<?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+							<?php if(strtolower($category->code) != 'other'): ?>
+								<li class="nav-item category-check" role="presentation">
+									<button class="nav-link" id="<?php echo e($category->code); ?>-tab" data-bs-toggle="tab" data-bs-target="#<?php echo e($category->code); ?>" type="button" role="tab" aria-controls="<?php echo e($category->code); ?>" aria-selected="false"><?php echo e(__($category->name)); ?></button>
+								</li>
+							<?php endif; ?>									
+						<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>	
+						<?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+						<?php if(strtolower($category->code) == 'other'): ?>
+							<li class="nav-item category-check" role="presentation">
+								<button class="nav-link" id="<?php echo e($category->code); ?>-tab" data-bs-toggle="tab" data-bs-target="#<?php echo e($category->code); ?>" type="button" role="tab" aria-controls="<?php echo e($category->code); ?>" aria-selected="false"><?php echo e(__($category->name)); ?></button>
+							</li>
+						<?php endif; ?>									
+					<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>				
+					</ul>
+				</div>
+			</div>	
+		</div>	
 	</div>
 
-	<div class="row" id="templates-panel">
+	<div class="">
+		<div class="favorite-templates-panel">
 
-		<?php $__currentLoopData = $favorite_chats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $chat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-			<div class="col-lg-3 col-md-6 col-sm-12" id="<?php echo e($chat->chat_code); ?>">
-				<div class="chat-boxes text-center">
-					<a id="<?php echo e($chat->chat_code); ?>" <?php if($chat->favorite): ?> data-tippy-content="<?php echo e(__('Remove from favorite')); ?>" <?php else: ?> data-tippy-content="<?php echo e(__('Select as favorite')); ?>" <?php endif; ?> onclick="favoriteStatus(this.id)"><i id="<?php echo e($chat->chat_code); ?>-icon" class="<?php if($chat->favorite): ?> fa-solid fa-stars <?php else: ?> fa-regular fa-star <?php endif; ?> star"></i></a>
-					<?php if($chat->category == 'professional'): ?> 
-						<p class="fs-8 btn btn-pro"><i class="fa-sharp fa-solid fa-crown mr-2"></i><?php echo e(__('Pro')); ?></p> 
-					<?php elseif($chat->category == 'free'): ?>
-						<p class="fs-8 btn btn-free"><i class="fa-sharp fa-solid fa-gift mr-2"></i><?php echo e(__('Free')); ?></p> 
-					<?php elseif($chat->category == 'premium'): ?>
-						<p class="fs-8 btn btn-yellow"><i class="fa-sharp fa-solid fa-gem mr-2"></i><?php echo e(__('Premium')); ?></p> 
-					<?php endif; ?>
-					<div class="card <?php if($chat->category == 'professional'): ?> professional <?php elseif($chat->category == 'premium'): ?> premium <?php elseif($chat->favorite): ?> favorite <?php else: ?> border-0 <?php endif; ?>" id="<?php echo e($chat->chat_code); ?>-card" onclick="window.location.href='<?php echo e(url('user/chats')); ?>/<?php echo e($chat->chat_code); ?>'">
-						<div class="card-body pt-3">
-							<div class="widget-user-image overflow-hidden mx-auto mt-3 mb-4"><img alt="User Avatar" class="rounded-circle" src="<?php echo e(URL::asset($chat->logo)); ?>"></div>
-							<div class="template-title">
-								<h6 class="mb-2 fs-15 number-font"><?php echo e(__($chat->name)); ?></h6>
+			<div class="tab-content" id="myTabContent">
+
+				<div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tab">
+					<div class="row" id="templates-panel">
+
+						<?php $__currentLoopData = $favorite_chats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $chat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+							<div class="col-lg-3 col-md-6 col-sm-12" id="<?php echo e($chat->chat_code); ?>">
+								<div class="chat-boxes text-center">
+									<a id="<?php echo e($chat->chat_code); ?>" <?php if($chat->favorite): ?> data-tippy-content="<?php echo e(__('Remove from favorite')); ?>" <?php else: ?> data-tippy-content="<?php echo e(__('Select as favorite')); ?>" <?php endif; ?> onclick="favoriteStatus(this.id)"><i id="<?php echo e($chat->chat_code); ?>-icon" class="<?php if($chat->favorite): ?> fa-solid fa-stars <?php else: ?> fa-regular fa-star <?php endif; ?> star"></i></a>
+									<?php if($chat->category == 'professional'): ?> 
+										<p class="fs-8 btn btn-pro"><i class="fa-sharp fa-solid fa-crown mr-2"></i><?php echo e(__('Pro')); ?></p> 
+									<?php elseif($chat->category == 'free'): ?>
+										<p class="fs-8 btn btn-free"><i class="fa-sharp fa-solid fa-gift mr-2"></i><?php echo e(__('Free')); ?></p> 
+									<?php elseif($chat->category == 'premium'): ?>
+										<p class="fs-8 btn btn-yellow"><i class="fa-sharp fa-solid fa-gem mr-2"></i><?php echo e(__('Premium')); ?></p> 
+									<?php endif; ?>
+									<div class="card <?php if($chat->category == 'professional'): ?> professional <?php elseif($chat->category == 'premium'): ?> premium <?php elseif($chat->favorite): ?> favorite <?php else: ?> border-0 <?php endif; ?>" id="<?php echo e($chat->chat_code); ?>-card" onclick="window.location.href='<?php echo e(url('user/chats')); ?>/<?php echo e($chat->chat_code); ?>'">
+										<div class="card-body pt-3">
+											<div class="widget-user-image overflow-hidden mx-auto mt-3 mb-4"><img alt="User Avatar" class="rounded-circle" src="<?php echo e(URL::asset($chat->logo)); ?>"></div>
+											<div class="template-title">
+												<h6 class="mb-2 fs-15 number-font"><?php echo e(__($chat->name)); ?></h6>
+											</div>
+											<div class="template-info">
+												<p class="fs-13 text-muted mb-2"><?php echo e(__($chat->sub_name)); ?></p>
+											</div>							
+										</div>
+									</div>
+								</div>							
 							</div>
-							<div class="template-info">
-								<p class="fs-13 text-muted mb-2"><?php echo e(__($chat->sub_name)); ?></p>
-							</div>							
+						<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+						<?php $__currentLoopData = $other_chats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $chat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+							<div class="col-lg-3 col-md-6 col-sm-12" id="<?php echo e($chat->chat_code); ?>">
+								<div class="chat-boxes text-center">
+									<a id="<?php echo e($chat->chat_code); ?>" <?php if($chat->favorite): ?> data-tippy-content="<?php echo e(__('Remove from favorite')); ?>" <?php else: ?> data-tippy-content="<?php echo e(__('Select as favorite')); ?>" <?php endif; ?> onclick="favoriteStatus(this.id)"><i id="<?php echo e($chat->chat_code); ?>-icon" class="<?php if($chat->favorite): ?> fa-solid fa-stars <?php else: ?> fa-regular fa-star <?php endif; ?> star"></i></a>
+									<?php if($chat->category == 'professional'): ?> 
+										<p class="fs-8 btn btn-pro"><i class="fa-sharp fa-solid fa-crown mr-2"></i><?php echo e(__('Pro')); ?></p> 
+									<?php elseif($chat->category == 'free'): ?>
+										<p class="fs-8 btn btn-free"><i class="fa-sharp fa-solid fa-gift mr-2"></i><?php echo e(__('Free')); ?></p> 
+									<?php elseif($chat->category == 'premium'): ?>
+										<p class="fs-8 btn btn-yellow"><i class="fa-sharp fa-solid fa-gem mr-2"></i><?php echo e(__('Premium')); ?></p> 
+									<?php endif; ?>
+									<div class="card <?php if($chat->category == 'professional'): ?> professional <?php elseif($chat->category == 'premium'): ?> premium <?php elseif($chat->favorite): ?> favorite <?php else: ?> border-0 <?php endif; ?>" id="<?php echo e($chat->chat_code); ?>-card" onclick="window.location.href='<?php echo e(url('user/chats')); ?>/<?php echo e($chat->chat_code); ?>'">
+										<div class="card-body pt-3">
+											<div class="widget-user-image overflow-hidden mx-auto mt-3 mb-4"><img alt="User Avatar" class="rounded-circle" src="<?php echo e(URL::asset($chat->logo)); ?>"></div>
+											<div class="template-title">
+												<h6 class="mb-2 fs-15 number-font"><?php echo e(__($chat->name)); ?></h6>
+											</div>
+											<div class="template-info">
+												<p class="fs-13 text-muted mb-2"><?php echo e(__($chat->sub_name)); ?></p>
+											</div>							
+										</div>
+									</div>
+								</div>							
+							</div>
+						<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+					</div>
+				</div>
+
+				<?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+					<div class="tab-pane fade" id="<?php echo e($category->code); ?>" role="tabpanel" aria-labelledby="<?php echo e($category->code); ?>-tab">
+						<div class="row" id="templates-panel">
+							<?php $__currentLoopData = $favorite_chats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $chat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+								<?php if($chat->group == $category->code): ?>
+									<div class="col-lg-3 col-md-6 col-sm-12" id="<?php echo e($chat->chat_code); ?>">
+										<div class="chat-boxes text-center">
+											<a id="<?php echo e($chat->chat_code); ?>" <?php if($chat->favorite): ?> data-tippy-content="<?php echo e(__('Remove from favorite')); ?>" <?php else: ?> data-tippy-content="<?php echo e(__('Select as favorite')); ?>" <?php endif; ?> onclick="favoriteStatus(this.id)"><i id="<?php echo e($chat->chat_code); ?>-icon" class="<?php if($chat->favorite): ?> fa-solid fa-stars <?php else: ?> fa-regular fa-star <?php endif; ?> star"></i></a>
+											<?php if($chat->category == 'professional'): ?> 
+												<p class="fs-8 btn btn-pro"><i class="fa-sharp fa-solid fa-crown mr-2"></i><?php echo e(__('Pro')); ?></p> 
+											<?php elseif($chat->category == 'free'): ?>
+												<p class="fs-8 btn btn-free"><i class="fa-sharp fa-solid fa-gift mr-2"></i><?php echo e(__('Free')); ?></p> 
+											<?php elseif($chat->category == 'premium'): ?>
+												<p class="fs-8 btn btn-yellow"><i class="fa-sharp fa-solid fa-gem mr-2"></i><?php echo e(__('Premium')); ?></p> 
+											<?php endif; ?>
+											<div class="card <?php if($chat->category == 'professional'): ?> professional <?php elseif($chat->category == 'premium'): ?> premium <?php elseif($chat->favorite): ?> favorite <?php else: ?> border-0 <?php endif; ?>" id="<?php echo e($chat->chat_code); ?>-card" onclick="window.location.href='<?php echo e(url('user/chats')); ?>/<?php echo e($chat->chat_code); ?>'">
+												<div class="card-body pt-3">
+													<div class="widget-user-image overflow-hidden mx-auto mt-3 mb-4"><img alt="User Avatar" class="rounded-circle" src="<?php echo e(URL::asset($chat->logo)); ?>"></div>
+													<div class="template-title">
+														<h6 class="mb-2 fs-15 number-font"><?php echo e(__($chat->name)); ?></h6>
+													</div>
+													<div class="template-info">
+														<p class="fs-13 text-muted mb-2"><?php echo e(__($chat->sub_name)); ?></p>
+													</div>							
+												</div>
+											</div>
+										</div>							
+									</div>
+								<?php endif; ?>
+							<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+							<?php $__currentLoopData = $other_chats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $chat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+								<?php if($chat->group == $category->code): ?>
+									<div class="col-lg-3 col-md-6 col-sm-12" id="<?php echo e($chat->chat_code); ?>">
+										<div class="chat-boxes text-center">
+											<a id="<?php echo e($chat->chat_code); ?>" <?php if($chat->favorite): ?> data-tippy-content="<?php echo e(__('Remove from favorite')); ?>" <?php else: ?> data-tippy-content="<?php echo e(__('Select as favorite')); ?>" <?php endif; ?> onclick="favoriteStatus(this.id)"><i id="<?php echo e($chat->chat_code); ?>-icon" class="<?php if($chat->favorite): ?> fa-solid fa-stars <?php else: ?> fa-regular fa-star <?php endif; ?> star"></i></a>
+											<?php if($chat->category == 'professional'): ?> 
+												<p class="fs-8 btn btn-pro"><i class="fa-sharp fa-solid fa-crown mr-2"></i><?php echo e(__('Pro')); ?></p> 
+											<?php elseif($chat->category == 'free'): ?>
+												<p class="fs-8 btn btn-free"><i class="fa-sharp fa-solid fa-gift mr-2"></i><?php echo e(__('Free')); ?></p> 
+											<?php elseif($chat->category == 'premium'): ?>
+												<p class="fs-8 btn btn-yellow"><i class="fa-sharp fa-solid fa-gem mr-2"></i><?php echo e(__('Premium')); ?></p> 
+											<?php endif; ?>
+											<div class="card <?php if($chat->category == 'professional'): ?> professional <?php elseif($chat->category == 'premium'): ?> premium <?php elseif($chat->favorite): ?> favorite <?php else: ?> border-0 <?php endif; ?>" id="<?php echo e($chat->chat_code); ?>-card" onclick="window.location.href='<?php echo e(url('user/chats')); ?>/<?php echo e($chat->chat_code); ?>'">
+												<div class="card-body pt-3">
+													<div class="widget-user-image overflow-hidden mx-auto mt-3 mb-4"><img alt="User Avatar" class="rounded-circle" src="<?php echo e(URL::asset($chat->logo)); ?>"></div>
+													<div class="template-title">
+														<h6 class="mb-2 fs-15 number-font"><?php echo e(__($chat->name)); ?></h6>
+													</div>
+													<div class="template-info">
+														<p class="fs-13 text-muted mb-2"><?php echo e(__($chat->sub_name)); ?></p>
+													</div>							
+												</div>
+											</div>
+										</div>							
+									</div>
+								<?php endif; ?>
+							<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 						</div>
 					</div>
-				</div>							
+				<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 			</div>
-		<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-
-		<?php $__currentLoopData = $other_chats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $chat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-			<div class="col-lg-3 col-md-6 col-sm-12" id="<?php echo e($chat->chat_code); ?>">
-				<div class="chat-boxes text-center">
-					<a id="<?php echo e($chat->chat_code); ?>" <?php if($chat->favorite): ?> data-tippy-content="<?php echo e(__('Remove from favorite')); ?>" <?php else: ?> data-tippy-content="<?php echo e(__('Select as favorite')); ?>" <?php endif; ?> onclick="favoriteStatus(this.id)"><i id="<?php echo e($chat->chat_code); ?>-icon" class="<?php if($chat->favorite): ?> fa-solid fa-stars <?php else: ?> fa-regular fa-star <?php endif; ?> star"></i></a>
-					<?php if($chat->category == 'professional'): ?> 
-						<p class="fs-8 btn btn-pro"><i class="fa-sharp fa-solid fa-crown mr-2"></i><?php echo e(__('Pro')); ?></p> 
-					<?php elseif($chat->category == 'free'): ?>
-						<p class="fs-8 btn btn-free"><i class="fa-sharp fa-solid fa-gift mr-2"></i><?php echo e(__('Free')); ?></p> 
-					<?php elseif($chat->category == 'premium'): ?>
-						<p class="fs-8 btn btn-yellow"><i class="fa-sharp fa-solid fa-gem mr-2"></i><?php echo e(__('Premium')); ?></p> 
-					<?php endif; ?>
-					<div class="card <?php if($chat->category == 'professional'): ?> professional <?php elseif($chat->category == 'premium'): ?> premium <?php elseif($chat->favorite): ?> favorite <?php else: ?> border-0 <?php endif; ?>" id="<?php echo e($chat->chat_code); ?>-card" onclick="window.location.href='<?php echo e(url('user/chats')); ?>/<?php echo e($chat->chat_code); ?>'">
-						<div class="card-body pt-3">
-							<div class="widget-user-image overflow-hidden mx-auto mt-3 mb-4"><img alt="User Avatar" class="rounded-circle" src="<?php echo e(URL::asset($chat->logo)); ?>"></div>
-							<div class="template-title">
-								<h6 class="mb-2 fs-15 number-font"><?php echo e(__($chat->name)); ?></h6>
-							</div>
-							<div class="template-info">
-								<p class="fs-13 text-muted mb-2"><?php echo e(__($chat->sub_name)); ?></p>
-							</div>							
-						</div>
-					</div>
-				</div>							
-			</div>
-		<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-
+		</div>
 	</div>
 
 <?php $__env->stopSection(); ?>

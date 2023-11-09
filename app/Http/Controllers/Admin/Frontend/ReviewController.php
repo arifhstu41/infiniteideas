@@ -24,8 +24,8 @@ class ReviewController extends Controller
                     ->addIndexColumn()
                     ->addColumn('actions', function($row){
                         $actionBtn = '<div>                                            
-                                            <a href="'. route("admin.settings.review.edit", $row["id"] ). '"><i class="fa-solid fa-pencil-square table-action-buttons edit-action-button" title="Edit Review"></i></a>
-                                            <a class="deleteReviewButton" id="'. $row["id"] .'" href="#"><i class="fa-solid fa-trash-xmark table-action-buttons delete-action-button" title="Delete Review"></i></a>
+                                            <a href="'. route("admin.settings.review.edit", $row["id"] ). '"><i class="fa-solid fa-pencil-square table-action-buttons edit-action-button" title="'. __('Edit Review') .'"></i></a>
+                                            <a class="deleteReviewButton" id="'. $row["id"] .'" href="#"><i class="fa-solid fa-trash-xmark table-action-buttons delete-action-button" title="'. __('Delete Review') .'"></i></a>
                                         </div>';
                         return $actionBtn;
                     })

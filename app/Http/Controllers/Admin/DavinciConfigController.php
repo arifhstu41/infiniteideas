@@ -97,6 +97,8 @@ class DavinciConfigController extends Controller
         $this->storeConfiguration('DAVINCI_SETTINGS_OPENAI_KEY_USAGE', request('openai-key-usage'));
         $this->storeConfiguration('DAVINCI_SETTINGS_TEAM_MEMBERS_FEATURE', request('team-members-feature'));
         $this->storeConfiguration('DAVINCI_SETTINGS_TEAM_MEMBERS_QUANTITY', request('team-members-quantity'));
+        $this->storeConfiguration('DAVINCI_SETTINGS_PERSONAL_OPENAI_API_KEY', request('personal-openai-api'));
+        $this->storeConfiguration('DAVINCI_SETTINGS_PERSONAL_SD_API_KEY', request('personal-sd-api'));
 
         $this->storeConfiguration('DAVINCI_SETTINGS_VOICEOVER_ENABLE_AZURE', request('enable-azure'));
         $this->storeConfiguration('DAVINCI_SETTINGS_VOICEOVER_ENABLE_GCP', request('enable-gcp'));
